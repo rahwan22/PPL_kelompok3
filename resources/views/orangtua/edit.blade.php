@@ -1,0 +1,42 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container mt-4">
+    <h3>Edit Orang Tua</h3>
+
+    <form action="{{ route('orangtua.update', $orangtua->id_orangtua) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="mb-3">
+            <label>Nama</label>
+            <input type="text" name="nama" class="form-control" value="{{ $orangtua->nama }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" value="{{ $orangtua->email }}">
+        </div>
+        <div class="mb-3">
+            <label>No. WhatsApp</label>
+            <input type="text" name="no_wa" class="form-control" value="{{ $orangtua->no_wa }}">
+        </div>
+        <div class="mb-3">
+            <label>Preferensi Notifikasi</label><br>
+            @php $pref = $orangtua->preferensi_notif ?? []; @endphp
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="preferensi_notif[]" value="email"
+                    {{ in_array('email', $pref ?? []) ? 'checked' : '' }}>
+                <label class="form-check-label">Email</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="preferensi_notif[]" value="wa"
+                    {{ in_array('wa', $pref ?? []) ? 'checked' : '' }}>
+                <label class="form-check-label">WhatsApp</label>
+            </div>
+        </div>
+
+        <button class="btn btn-success">Update</button>
+        <a href="{{ route('orangtua.index') }}" class="btn btn-secondary">Kembali</a>
+    </form>
+</div>
+@endsection
