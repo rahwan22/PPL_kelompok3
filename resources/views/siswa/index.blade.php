@@ -20,7 +20,9 @@
                 <th>Kelas</th>
                 <th>Orang Tua</th>
                 <th>Status</th>
+                @if (auth()->user()->role === 'admin')
                 <th>Aksi</th>
+                 @endif
             </tr>
         </thead>
         <tbody>
@@ -32,6 +34,8 @@
                     <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
                     <td>{{ $s->orangtua->nama ?? '-' }}</td>
                     <td>{{ $s->aktif ? 'Aktif' : 'Nonaktif' }}</td>
+                    
+                    @if (auth()->user()->role === 'admin')
                     <td>
                         <a href="{{ route('admin.siswa.generateQR', $s->nis) }}" class="btn btn-sm btn-primary">
                             Generate QR
@@ -50,6 +54,8 @@
                             <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus data?')">Hapus</button>
                         </form>
                     </td>
+                        @endif
+                    
                 </tr>
             @endforeach
         </tbody>

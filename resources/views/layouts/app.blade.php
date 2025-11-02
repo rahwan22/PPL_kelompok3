@@ -107,7 +107,7 @@ function confirmDelete(nama, id) {
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.guru') }}">Laporan Guru</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.siswa') }}">Laporan Siswa</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.nilai') }}">Laporan Nilai</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('mapel.index') }}">Semua Mapel</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('laporan.mapel') }}">Semua Mapel</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.absensi') }}">Laporan Absensi</a></li>
 
                     @elseif($role == 'guru')
@@ -116,7 +116,7 @@ function confirmDelete(nama, id) {
                         <li class="nav-item"><a class="nav-link" href="{{ route('absensi.scan') }}">Absensi Siswa (QR)</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('absensi.index') }}">LIhat Absensi</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('kelas.index') }}">Lihat Kelas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('mapel.index') }}">Lihat Mapel</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('guru.mapel') }}">Lihat Mapel</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}">Input Nilai</a></li>
                     @endif
                 </ul>

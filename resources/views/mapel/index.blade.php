@@ -3,10 +3,13 @@
 @section('content')
 <div class="container mt-4">
 
-    {{-- 1. Mengatur Tombol Tambah --}}
+    <!-- {{-- 1. Mengatur Tombol Tambah --}}
     @if (auth()->user()->role === 'admin')
         {{-- Tombol Tambah hanya muncul untuk role 'admin' --}}
         <a href="{{ route('mapel.create') }}" class="btn btn-primary mb-3">+ Tambah Mata Pelajaran</a>
+    @endif -->
+    @if (auth()->user()->role === 'kepala_sekolah ')
+        <a href="{{ route('mapel.create') }}" class="btn btn-success mb-3">+ Tambah Mapel</a>
     @endif
 
     @if(session('success'))

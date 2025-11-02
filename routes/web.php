@@ -64,6 +64,7 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->group(function () {
     Route::get('laporan/siswa', [SiswaController::class, 'index'])->name('laporan.siswa');
     Route::get('laporan/nilai', [NilaiController::class, 'index'])->name('laporan.nilai');
     Route::get('laporan/absensi', [AbsensiController::class, 'index'])->name('laporan.absensi');
+    Route::get('laporan/mapel', [MataPelajaranController::class, 'index'])->name('laporan.mapel');
 });
 
 
@@ -83,7 +84,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/scan', [AbsensiController::class, 'scanForm'])->name('absensi.scan');
     
     // Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
-    // Route::get('/mapel', [MataPelajaranController::class, 'index'])->name('mapel.index');
+    Route::get('guru/mapel', [MataPelajaranController::class, 'index'])->name('guru.mapel');
     
 
     // --- Rute Nilai ---

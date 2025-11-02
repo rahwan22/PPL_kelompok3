@@ -22,7 +22,11 @@
                 <th>No_Hp</th>
                 <th>Email</th>
                 <th>Mapel</th>
+                
+                 @if (auth()->user()->role === 'admin')
+          
                 <th>Aksi</th>
+                 @endif
             </tr>
         </thead>
         <tbody>
@@ -36,19 +40,22 @@
                 <td>{{ $g->no_hp }}</td>
                 <td>{{ $g->email }}</td>
                 <td>{{ $g->mapel }}</td>
+
+                 @if (auth()->user()->role === 'admin')
                 <td class="text-center">
                     <a href="{{ route('guru.edit', $g->id_guru) }}" class="btn btn-warning btn-sm">Edit</a>
                 <form id="delete-form-{{ $g->id_guru }}" action="{{ route('guru.destroy', $g->id_guru) }}" method="POST" class="d-inline">
-    @csrf
-    @method('DELETE')
-    <input type="hidden" name="delete_user" id="delete_user_{{ $g->id_guru }}" value="0">
-    <button type="button" class="btn btn-danger btn-sm"
-        onclick="confirmDelete('{{ $g->nama }}', '{{ $g->id_guru }}')">
-        Hapus
-    </button>
-</form>
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="delete_user" id="delete_user_{{ $g->id_guru }}" value="0">
+                    <button type="button" class="btn btn-danger btn-sm"
+                        onclick="confirmDelete('{{ $g->nama }}', '{{ $g->id_guru }}')">
+                        Hapus
+                    </button>
+                </form>
 
                 </td>
+                 @endif
             </tr>
             @endforeach
         </tbody>

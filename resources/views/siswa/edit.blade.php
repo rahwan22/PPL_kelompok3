@@ -37,7 +37,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="mb-3">
+        <!-- <div class="mb-3">
             <label>Orang Tua</label>
             <select name="id_orangtua" class="form-select">
                 <option value="">-- Pilih --</option>
@@ -47,7 +47,7 @@
                     </option>
                 @endforeach
             </select>
-        </div>
+        </div> -->
         <button class="btn btn-success">Perbarui</button>
         <a href="{{ route('siswa.index') }}" class="btn btn-secondary">Kembali</a>
     </form>

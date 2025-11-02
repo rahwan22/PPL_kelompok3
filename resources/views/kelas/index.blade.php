@@ -7,8 +7,8 @@
         <i class="fas fa-school me-2"></i> Data Kelas
     </h2>
 
-    {{-- Tombol Tambah Kelas (Hanya terlihat jika role BUKAN kepala_sekolah, yaitu Admin, Guru, dll.) --}}
-    @if (auth()->user()->role !== 'kepala_sekolah')
+    {{-- Tombol Tambah Kelas (Hanya terlihat jika role ADALAH admin) --}}
+    @if (auth()->user()->role === 'admin')
         <a href="{{ route('kelas.create') }}" class="btn btn-success mb-4 rounded-pill shadow-sm">
             <i class="fas fa-plus me-1"></i> Tambah Kelas
         </a>
@@ -33,14 +33,15 @@
                             <th scope="col" class="py-3">Nama Kelas</th>
                             <th scope="col" class="py-3">Tahun Ajaran</th>
                             <th scope="col" class="py-3">Wali Kelas</th>
-                            {{-- Tampilkan header Aksi hanya jika ada tombol aksi yang akan ditampilkan --}}
-                            @if (auth()->user()->role !== 'kepala_sekolah')
+                            {{-- Tampilkan header Aksi hanya jika role ADALAH admin --}}
+                            @if (auth()->user()->role === 'admin')
                                 <th scope="col" class="py-3 text-center">Aksi</th>
                             @endif
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($kelas as $k)
+                        {{-- *PENTING: Pastikan variabel yang di-loop adalah $kelas* --}}
+                        @forelse ($kelas as $k) 
                             <tr>
                                 <td>{{ $k->id_kelas }}</td>
                                 <td>
@@ -53,8 +54,8 @@
                                     </span>
                                 </td>
                                 
-                                {{-- Kolom Aksi (Hanya untuk non-Kepala Sekolah) --}}
-                                @if (auth()->user()->role !== 'kepala_sekolah')
+                                {{-- Kolom Aksi (Hanya untuk Admin) --}}
+                                @if (auth()->user()->role === 'admin')
                                     <td class="text-center">
                                         {{-- Tombol Edit --}}
                                         <a href="{{ route('kelas.edit', $k->id_kelas) }}" class="btn btn-warning btn-sm me-2" title="Edit Data">
@@ -75,7 +76,7 @@
                         @empty
                             <tr>
                                 {{-- Penyesuaian colspan agar tabel tidak pecah --}}
-                                @php $colspan = (auth()->user()->role !== 'kepala_sekolah') ? 5 : 4; @endphp
+                                @php $colspan = (auth()->user()->role === 'admin') ? 5 : 4; @endphp
                                 <td colspan="{{ $colspan }}" class="text-center py-4 text-muted">
                                     <i class="fas fa-box-open me-2"></i> Belum ada data kelas yang tercatat.
                                 </td>
