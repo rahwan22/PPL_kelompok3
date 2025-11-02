@@ -16,6 +16,13 @@
             <p>{{ \App\Models\MataPelajaran::count() }}</p>
         </div>
     </div>
+        <div class="col-md-6">
+             <div class="card p-3 text-white bg-primary mb-3">
+            <h5>Jumlah Kelas</h5>
+            <p>{{ \App\Models\Kelas::count() }}</p>
+        </div>
+        </div>
+    
 </div>
 
 <!-- <div class="mt-3">
