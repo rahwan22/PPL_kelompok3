@@ -24,7 +24,6 @@
                 <th>Mapel</th>
                 
                  @if (auth()->user()->role === 'admin')
-          
                 <th>Aksi</th>
                  @endif
             </tr>
