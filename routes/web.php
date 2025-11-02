@@ -13,13 +13,13 @@ use App\Http\Controllers\MataPelajaranController;
 
 
 // Rute Halaman Utama
-Route::get('/', function () {
+Route::get('/u', function () {
     return view('welcome');
 });
 
 // ===================== 1. AUTHENTICATION (LOGIN & REGISTER) =====================
 
-Route::get('/login', [DashboardController::class, 'loginForm'])->name('login');
+Route::get('/', [DashboardController::class, 'loginForm'])->name('login');
 Route::post('login', [DashboardController::class, 'loginPost'])->name('login.post');
 Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
 

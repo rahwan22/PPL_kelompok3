@@ -46,13 +46,7 @@
          
           <button class="btn btn-login w-100">Login</button>
       </form>
-      <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-                lOGIN SEKARANG!
-                
-                    
-            </p>
-        </div>
+      
   </div>
 </body>
 </html>
