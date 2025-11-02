@@ -91,13 +91,13 @@ function confirmDelete(nama, id) {
 
                     @if($role == 'admin')
                     <h2>Dashboard Admin</h2>
-                        <li class="nav-item"><a class="bi-speedometer2" href="{{ route('dashboard.admin') }}">Dashboard</a></li>
-                        <li class="nav-item"><a class="bi-person-badge" href="{{ route('guru.index') }}">Semua Guru</a></li>
-                        <li class="nav-item"><a class="bi-people" href="{{ route('siswa.index') }}">Semua Siswa</a></li>
-                        <li class="nav-item"><a class="bi-building" href="{{ route('kelas.index') }}">Semua Kelas</a></li>
+                        <li class="bi-speedometer2"><a class="nav-link" href="{{ route('dashboard.admin') }}">Dashboard</a></li>
+                        <li class="bi-person-badge"><a class="nav-link" href="{{ route('guru.index') }}">Semua Guru</a></li>
+                        <li class="bi-people"><a class="nav-link" href="{{ route('siswa.index') }}">Semua Siswa</a></li>
+                        <li class="bi-building"><a class="nav-link" href="{{ route('kelas.index') }}">Semua Kelas</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('absensi.index') }}"> Lihat Absensi</a></li> -->
                         <!-- // ... di bagian dashboard admin, guru, dan kepala sekolah -->
-                        <li class="nav-item"><a class="bi-journal-bookmark" href="{{ route('mapel.index') }}">Semua Mapel</a></li>
+                        <li class="bi-journal-bookmark"><a class="nav-link" href="{{ route('mapel.index') }}">Semua Mapel</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}">Lihat Nilai</a></li> -->
                         
 
