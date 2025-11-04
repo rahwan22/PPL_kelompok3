@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Nilai;
 use App\Models\Siswa;
 use App\Models\MataPelajaran;
+use App\Models\Kelas;
 
 class NilaiController extends Controller
 {
@@ -17,11 +18,20 @@ class NilaiController extends Controller
     }
 
     // ✅ Form tambah nilai
+    // public function create()
+    // {
+    //     $siswa = Siswa::all();
+    //     $mapel = MataPelajaran::all();
+    //     return view('nilai.create', compact('siswa', 'mapel'));
+    // }
     public function create()
     {
         $siswa = Siswa::all();
         $mapel = MataPelajaran::all();
-        return view('nilai.create', compact('siswa', 'mapel'));
+        $kelas = Kelas::all(); // <-- AMBIL DATA KELAS
+
+        // KIRIM SEMUA VARIABEL INI KE VIEW
+        return view('nilai.create', compact('siswa', 'mapel', 'kelas')); 
     }
 
     // ✅ Simpan data nilai

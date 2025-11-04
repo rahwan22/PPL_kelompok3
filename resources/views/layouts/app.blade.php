@@ -261,6 +261,7 @@
                                     class="bi bi-person-badge"></i> Semua Guru</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('siswa.index') }}"><i
                                     class="bi bi-people"></i> Semua Siswa</a></li>
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('kelas.index') }}"><i
                                     class="bi bi-building"></i> Semua Kelas</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('absensi.index') }}"> Lihat Absensi</a></li> -->
@@ -268,6 +269,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('mapel.index') }}"><i
                                     class="bi bi-journal-bookmark"></i> Semua Mapel</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}">Lihat Nilai</a></li> -->
+
                     @elseif($role == 'kepala_sekolah')
                         <h2>Dashboard Kepala Sekolah</h2>
                         <li class="nav-item"><a class="nav-link" href="{{ route('dashboard.kepsek') }}"><i
@@ -276,12 +278,15 @@
                                     class="bi bi-person-badge"></i> Laporan Guru</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.siswa') }}"><i
                                     class="bi bi-people"></i> Laporan Siswa</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('laporan.nilai') }}"><i
-                                    class="bi bi-bar-chart-line"></i> Laporan Nilai</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="{{ route('laporan.nilai') }}"><i
+                                    class="bi bi-bar-chart-line"></i> Laporan Nilai</a></li> -->
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.mapel') }}"><i
                                     class="bi bi-journal-bookmark"></i> Semua Mapel</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.absensi') }}"><i
                                     class="bi bi-card-checklist"></i> Laporan Absensi</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('laporan.kelas') }}"><i
+                                    class="bi bi-people"></i> Lihat Kelas</a></li>
+
                     @elseif($role == 'guru')
                         <h2 ca;>DASHBOARD GURU</h2>
                         <li class="nav-item"><a class="nav-link" href="{{ route('dashboard.guru') }}"><i
@@ -290,10 +295,13 @@
                                     class="bi bi-qr-code-scan"></i> Absensi Siswa (QR)</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('absensi.index') }}"><i
                                     class="bi bi-card-checklist"></i> LIhat Absensi</a></li>
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('kelas.index') }}"><i
                                     class="bi bi-people"></i> Lihat Kelas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('guru.mapel') }}"><i
+                        <li class="nav-item"><a class="nav-link" href="{{ route('mapel.index') }}"><i
                                     class="bi bi-journal-bookmark"></i> Lihat Mapel</a></li>
+
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}"><i
                                     class="bi bi-pencil-square"></i> Input Nilai</a></li>
                     @endif

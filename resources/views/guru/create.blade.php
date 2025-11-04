@@ -18,7 +18,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="nip" class="form-label">NIP (opsional)</label>
+            <label for="nip" class="form-label">NIP </label>
             <input id="nip" name="nip" class="form-control" value="{{ old('nip') }}">
             @error('nip') <div class="text-danger">{{ $message }}</div> @enderror
         </div>
@@ -39,18 +39,18 @@
             @error('jenis_kelamin') <div class="text-danger">{{ $message }}</div> @enderror
         </div>
         <div class="mb-3">
-            <label for="alamat" class="form-label">Alamat (opsional)</label>
+            <label for="alamat" class="form-label">Alamat </label>
             <input id="alamat" name="alamat" class="form-control" value="{{ old('alamat') }}">
             @error('alamat') <div class="text-danger">{{ $message }}</div> @enderror
         </div>
         <div class="mb-3">
-            <label for="no_hp" class="form-label">No Hp (opsional)</label>
+            <label for="no_hp" class="form-label">No Hp</label>
             <input id="no_hp" name="no_hp" class="form-control" value="{{ old('no_hp') }}">
             @error('no_hp') <div class="text-danger">{{ $message }}</div> @enderror
         </div>
 
         <div class="mb-3">
-            <label for="mapel" class="form-label">Mapel (opsional)</label>
+            <label for="mapel" class="form-label">Mapel </label>
             <input id="mapel" name="mapel" class="form-control" value="{{ old('mapel') }}">
             @error('mapel') <div class="text-danger">{{ $message }}</div> @enderror
         </div>

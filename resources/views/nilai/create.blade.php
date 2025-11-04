@@ -29,8 +29,8 @@
             <label>Kelas</label>
             <select name="id_kelas" class="form-control" required>
                 <option value="">-- Pilih Kelas --</option>
-                @foreach($mapel as $m)
-                    <option value="{{ $m->id_kelas }}">{{ $m->kelas }}</option>
+                @foreach($kelas as $k)
+                    <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
                 @endforeach
             </select>
         </div>

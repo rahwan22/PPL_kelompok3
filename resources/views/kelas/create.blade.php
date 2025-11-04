@@ -8,7 +8,7 @@
     <h3 class="mb-4">Tambah Kelas Baru</h3>
 
     <!-- Pembatasan Akses Form Hanya untuk Admin -->
-    @if (Auth::check() && Auth::user()->role === 'admin')
+    @if (auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
                 <i class="bi bi-person-plus-fill me-2"></i> Formulir Kelas

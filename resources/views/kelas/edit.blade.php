@@ -7,7 +7,7 @@
     <h3 class="mb-4">Edit Kelas: <span class="text-primary">{{ $kela->nama_kelas }}</span></h3>
 
     <!-- Pembatasan Akses Form Hanya untuk Admin -->
-    @if (Auth::check() && Auth::user()->role === 'admin')
+    @if (auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
         <div class="card shadow-sm">
             <div class="card-header bg-warning text-dark">
                 <i class="bi bi-pencil-square me-2"></i> Perbarui Data Kelas
