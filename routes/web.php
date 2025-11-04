@@ -65,6 +65,7 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->group(function () {
     Route::get('laporan/nilai', [NilaiController::class, 'index'])->name('laporan.nilai');
     Route::get('laporan/absensi', [AbsensiController::class, 'index'])->name('laporan.absensi');
     Route::get('laporan/mapel', [MataPelajaranController::class, 'index'])->name('laporan.mapel');
+    Route::get('laporan/kelas', [KelasController::class, 'index'])->name('laporan.kelas');
 });
 
 
@@ -73,24 +74,17 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     
     Route::get('dashboard/guru', [DashboardController::class, 'guru'])->name('dashboard.guru');
 
-    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-    Route::get('absensi/create', [AbsensiController::class, 'create'])->name('absensi.create');
-    Route::get('absensi/{absensi}/edit', [AbsensiController::class, 'edit'])->name('absensi.edit');
-    Route::put('absensi/{absensi}', [AbsensiController::class, 'update'])->name('absensi.update');
-    Route::delete('absensi/{absensi}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
-    Route::post('absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
+    Route::resource('absensi', AbsensiController::class);
 
     // --- Rute Absensi QR (PENTING) ---
     Route::get('/scan', [AbsensiController::class, 'scanForm'])->name('absensi.scan');
     
-    // Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
-    Route::get('guru/mapel', [MataPelajaranController::class, 'index'])->name('guru.mapel');
+    // Route::get('/kelas', [KelasController::class, 'index'])->name('semua.kelas');
+    // Route::get('mapel', [MataPelajaranController::class, 'index'])->name('guru.mapel');
     
 
-    // --- Rute Nilai ---
-    Route::get('/nilai', [NilaiController::class, 'index'])->name('nilai.index');
-    Route::get('nilai/create', [NilaiController::class, 'create'])->name('nilai.create');
-    Route::post('/nilai/store', [NilaiController::class, 'store'])->name('nilai.store');
+    // --- Rute Nilai --
+    Route::resource('nilai', NilaiController::class);
 
 
     

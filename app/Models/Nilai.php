@@ -34,4 +34,5 @@ class Nilai extends Model
     {
         return $this->belongsTo(MataPelajaran::class, 'id_mapel', 'id_mapel');
     }
+    
 }
