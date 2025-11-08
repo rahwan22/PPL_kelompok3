@@ -88,10 +88,10 @@
                                         {{ $a->sumber }}
                                     </span>
                                 </td>
-                                <td>
+                                <!-- <td>
                                     {{-- Kolom DIINPUT OLEH baru (Asumsi relasi 'user' ada di model Absensi) --}}
-                                    <small>{{ $a->user->name ?? 'Sistem/Otomatis' }}</small>
-                                </td>
+                                    <small>{{ $a->user->name ?? ' ' }}</small> -->
+                                <!-- </td> -->
                                 @if (auth()->user()->role == 'admin' || auth()->user()->role == 'guru')
                                     <td class="text-center">
                                         {{-- Tombol Edit (Menggunakan $a->id_absensi) --}}
