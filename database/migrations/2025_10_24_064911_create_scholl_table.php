@@ -29,6 +29,7 @@ return new class extends Migration {
             $table->string('no_hp', 20)->nullable();
             $table->string('email', 100)->nullable();
             $table->string('mapel', 100)->nullable();
+            $table->string('foto', 255)->nullable();
             $table->foreignId('id_user')
                 ->nullable()
                 ->constrained('users', 'id_user')
@@ -67,6 +68,7 @@ return new class extends Migration {
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->date('tanggal_lahir')->nullable();
             $table->text('alamat')->nullable();
+            $table->string('foto', 255)->nullable();
             $table->string('qr_code', 255)->nullable(); // untuk absensi QR
             $table->foreignId('id_kelas')
                 ->constrained('kelas', 'id_kelas')

@@ -8,7 +8,7 @@
     <h3 class="mb-4">Tambah Kelas Baru</h3>
 
     <!-- Pembatasan Akses Form Hanya untuk Admin -->
-    @if (auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+    @if (auth()->user()->role === 'admin')
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
                 <i class="bi bi-person-plus-fill me-2"></i> Formulir Kelas
@@ -45,7 +45,7 @@
                         <label for="id_wali_kelas" class="form-label">Wali Kelas</label>
                         <select name="id_wali_kelas" id="id_wali_kelas"
                                 class="form-select @error('id_wali_kelas') is-invalid @enderror">
-                            <option value="">-- Pilih Wali Kelas (Opsional) --</option>
+                            <option value="">-- Pilih Wali Kelas --</option>
                             <!-- Loop data guru yang dikirim dari controller -->
                             @foreach ($guru as $g)
                                 <option value="{{ $g->id_guru }}" {{ old('id_wali_kelas') == $g->id_guru ? 'selected' : '' }}>

@@ -1,63 +1,127 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
-    <h3 class="mb-4">Tambah Guru</h3>
+<div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl mt-10">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Tambah Data Guru</h1>
 
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+    @if ($errors->any())
+        <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded-lg">
+            <p class="font-bold">Terjadi Kesalahan Validasi:</p>
+            <ul class="list-disc ml-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
-    <form action="{{ route('guru.store') }}" method="POST">
+    @if (session('error'))
+        <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded-lg">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- Form harus memiliki atribut enctype="multipart/form-data" untuk upload file -->
+    <form action="{{ route('guru.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Nama -->
+            <div>
+                <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                <input type="text" name="nama" id="nama" value="{{ old('nama') }}" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nama') border-red-500 @enderror">
+                @error('nama')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <!-- NIP -->
+            <div>
+                <label for="nip" class="block text-sm font-medium text-gray-700 mb-1">NIP (Opsional)</label>
+                <input type="text" name="nip" id="nip" value="{{ old('nip') }}"
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nip') border-red-500 @enderror">
+                @error('nip')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-        <div class="mb-3">
-            <label for="nama" class="form-label">Nama</label>
-            <input id="nama" name="nama" class="form-control" value="{{ old('nama') }}" required>
-            @error('nama') <div class="text-danger">{{ $message }}</div> @enderror
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email (Digunakan untuk Login)</label>
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror">
+                @error('email')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Jenis Kelamin -->
+            <div>
+                <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
+                <select name="jenis_kelamin" id="jenis_kelamin" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('jenis_kelamin') border-red-500 @enderror">
+                    <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                    <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                </select>
+                @error('jenis_kelamin')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <!-- No HP -->
+            <div>
+                <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1">Nomor HP</label>
+                <input type="text" name="no_hp" id="no_hp" value="{{ old('no_hp') }}" required
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('no_hp') border-red-500 @enderror">
+                @error('no_hp')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Mata Pelajaran -->
+            <div>
+                <label for="mapel" class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran yang Diampu (Opsional)</label>
+                <input type="text" name="mapel" id="mapel" value="{{ old('mapel') }}"
+                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('mapel') border-red-500 @enderror">
+                @error('mapel')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Alamat -->
+            <div class="md:col-span-2">
+                <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
+                <textarea name="alamat" id="alamat" rows="2" required
+                          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('alamat') border-red-500 @enderror">{{ old('alamat') }}</textarea>
+                @error('alamat')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Foto -->
+            <div class="md:col-span-2">
+                <label for="foto" class="block text-sm font-medium text-gray-700 mb-1">Foto Profil (Maks 2MB)</label>
+                
+                <input type="file" name="foto" id="foto" 
+                       class="mt-1 block w-full text-sm text-gray-500
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-full file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-indigo-50 file:text-indigo-700
+                              hover:file:bg-indigo-100 @error('foto') border-red-500 @enderror">
+                @error('foto')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="nip" class="form-label">NIP </label>
-            <input id="nip" name="nip" class="form-control" value="{{ old('nip') }}">
-            @error('nip') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="email" class="form-label">Email (wajib, akan dipakai untuk login)</label>
-            <input id="email" name="email" type="email" class="form-control" value="{{ old('email') }}" required>
-            @error('email') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-            <select id="jenis_kelamin" name="jenis_kelamin" class="form-select" required>
-                <option value="">-- Pilih --</option>
-                <option value="L" {{ old('jenis_kelamin')=='L'?'selected':'' }}>L</option>
-                <option value="P" {{ old('jenis_kelamin')=='P'?'selected':'' }}>P</option>
-            </select>
-            @error('jenis_kelamin') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-            <label for="alamat" class="form-label">Alamat </label>
-            <input id="alamat" name="alamat" class="form-control" value="{{ old('alamat') }}">
-            @error('alamat') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-        <div class="mb-3">
-            <label for="no_hp" class="form-label">No Hp</label>
-            <input id="no_hp" name="no_hp" class="form-control" value="{{ old('no_hp') }}">
-            @error('no_hp') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="mapel" class="form-label">Mapel </label>
-            <input id="mapel" name="mapel" class="form-control" value="{{ old('mapel') }}">
-            @error('mapel') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-
-        <div class="d-flex justify-content-end">
-            <a href="{{ route('guru.index') }}" class="btn btn-secondary me-2">Batal</a>
-            <button class="btn btn-success">Simpan (akun dibuat dengan password default "password123")</button>
+        <div class="mt-8 pt-4 border-t flex justify-end">
+            <a href="{{ route('guru.index') }}" class="px-6 py-2 text-sm font-semibold rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-50 mr-3">Batal</a>
+            <button type="submit" class="px-6 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition duration-150 ease-in-out">
+                Simpan Guru
+            </button>
         </div>
     </form>
 </div>

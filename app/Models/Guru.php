@@ -10,10 +10,9 @@ class Guru extends Model
     use HasFactory;
 
     protected $table = 'guru';
-    // protected $primaryKey = 'id_guru';
-    // protected $fillable = ['nip', 'nama', 'role', 'password_hash'];
+
     protected $primaryKey = 'id_guru';
-    protected $fillable = ['nip', 'nama', 'jenis_kelamin', 'alamat', 'no_hp', 'email', 'mapel'];
+    protected $fillable = ['nip', 'nama', 'jenis_kelamin', 'alamat', 'no_hp', 'email', 'mapel', 'foto'];
 
 
     // 🔹 Relasi: 1 Guru → Banyak Absensi
@@ -35,6 +34,12 @@ class Guru extends Model
     {
         return $this->hasMany(Kelas::class, 'id_wali_kelas', 'id_guru');
     }
+
+    public function kelasWali()
+{
+    // Asumsi: Kelas memiliki kolom foreign key 'id_guru'
+    return $this->hasOne(Kelas::class, 'id_guru', 'id_guru');
+}
 
 }
 

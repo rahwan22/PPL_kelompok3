@@ -35,7 +35,9 @@
                     {{-- 2. Mengatur Tombol Edit & Hapus --}}
                     @if (auth()->user()->role === 'admin')
                         <td>
-                            <a href="{{ route('mapel.edit', $m->id_mapel) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ route('mapel.edit', $m->id_mapel) }}" class="btn btn-primary btn-sm me-2" title="Edit Data">
+                                <i class="fas fa-edit"></i>
+                            </a>
                             <form action="{{ route('mapel.destroy', $m->id_mapel) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')

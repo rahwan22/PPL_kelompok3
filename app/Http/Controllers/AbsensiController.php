@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Absensi;
 use App\Models\Siswa;
-use Carbon\Carbon; // *** DITAMBAHKAN: Untuk memanajemen waktu/tanggal ***
+use App\Models\Notifikasi;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException; // Untuk penanganan error validasi yang lebih baik
 
 class AbsensiController extends Controller
@@ -38,40 +39,148 @@ class AbsensiController extends Controller
         return view('absensi.scan'); 
     }
 
-    /**
-     * Simpan data absensi baru (digunakan untuk Form Manual dan Scan QR)
-     */
     public function store(Request $request)
     {
-        // 1. Cek apakah permintaan datang dari AJAX/JSON (biasanya dari QR scan)
-        if ($request->wantsJson()) {
-            return $this->handleQrScanStore($request);
+        // Cek apakah request berasal dari QR Scan (JSON) atau Form Manual (HTML Form)
+        // Jika tidak ada 'nis' di request, Laravel akan gagal di validasi JSON.
+        
+        $isQrScan = $request->header('Content-Type') === 'application/json';
+        
+        // --- 1. Validasi Data ---
+        if ($isQrScan) {
+            $validatedData = $request->validate([
+                'nis' => 'required|string|max:20|exists:siswa,nis',
+            ]);
+            
+            $nis = $validatedData['nis'];
+            $sumber = 'qr';
+            $waktu_absensi = Carbon::now();
+            $tanggal_hari_ini = $waktu_absensi->toDateString();
+            
+        } else {
+            // Logika untuk Form Absensi Manual (Jika Anda menggunakan Controller yang sama)
+            $validatedData = $request->validate([
+                'nis'     => 'required|string|max:20|exists:siswa,nis',
+                'tanggal' => 'required|date',
+                'jam'     => 'nullable|date_format:H:i',
+                'status'  => 'required|in:hadir,terlambat,izin,sakit,alpa',
+                'lokasi'  => 'nullable|string|max:100',
+                'sumber'  => 'required|in:manual',
+            ]);
+            
+            $nis = $validatedData['nis'];
+            $sumber = 'manual';
+            $waktu_absensi = Carbon::parse($validatedData['tanggal'] . ' ' . ($datetime['jam'] ?? '00:00:00'));
+            $tanggal_hari_ini = $validatedData['tanggal'];
         }
 
-        // --- 2. Logika untuk Form Manual (Jika request bukan JSON) ---
+        // --- 2. Cek Duplikasi Absensi (Hanya untuk QR Scan / Hadir/Terlambat) ---
+        // Cek apakah siswa sudah absen HADIR atau TERLAMBAT hari ini
+        if ($isQrScan) {
+            $existingAbsensi = Absensi::where('nis', $nis)
+                ->whereDate('tanggal', $tanggal_hari_ini)
+                ->whereIn('status', ['hadir', 'terlambat'])
+                ->first();
+                
+            if ($existingAbsensi) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "❌ Siswa ini sudah absen ({$existingAbsensi->status}) hari ini pada pukul " . Carbon::parse($existingAbsensi->waktu)->format('H:i') . ".",
+                    'status'  => $existingAbsensi->status
+                ], 200);
+            }
 
-        $request->validate([
-            // Pastikan field 'nis' ada di table Absensi atau Anda mapping ke 'siswa_id'
-            'nis' => 'required|exists:siswa,nis',
-            'tanggal' => 'required|date',
-            'status' => 'required|in:hadir,terlambat,izin,sakit,alpa', // Menggunakan huruf kecil sesuai ENUM di migration
-            'sumber' => 'required|in:scan,manual',
-            'lokasi' => 'nullable|string|max:100', // *** PERUBAHAN: Validasi Lokasi Manual ***
-        ]);
+            // Tentukan Status (Hadir atau Terlambat)
+            // Ganti dengan jam masuk yang sebenarnya, contoh: 07:00
+            $jam_masuk_target = Carbon::createFromTimeString('07:00:00'); 
+            
+            $status = $waktu_absensi->greaterThan($jam_masuk_target) ? 'terlambat' : 'hadir';
+            $lokasi = 'Perangkat QR'; // Lokasi default untuk absensi QR
+        }
+        
+        // Jika manual, ambil status dan lokasi dari validatedData
+        if (!$isQrScan) {
+            $status = strtolower($validatedData['status']);
+            $lokasi = $validatedData['lokasi'];
+        }
 
-        // Catat absensi manual
-        Absensi::create([
-            'nis' => $request->nis, 
-            'tanggal' => $request->tanggal,
-            'status' => strtolower($request->status), // Pastikan status disimpan dalam huruf kecil
-            'sumber' => 'manual', // Diatur manual karena ini adalah input manual
-            'jam' => $request->jam ?? Carbon::now()->format('H:i:s'),
-            'id_user' => auth()->check() ? auth()->id() : null, // Catat ID Guru/Admin yang menginput
-            'lokasi' => $request->lokasi, // *** PERUBAHAN: Menyimpan Lokasi Manual ***
-        ]);
 
-        return redirect()->route('absensi.index')->with('success', 'Data absensi berhasil ditambahkan secara manual!');
+        // --- 3. Simpan Absensi ---
+        try {
+            $absensi = Absensi::create([
+                'nis'     => $nis,
+                'waktu'   => $waktu_absensi,
+                'tanggal' => $tanggal_hari_ini,
+                'status'  => $status,
+                'lokasi'  => $lokasi,
+                'sumber'  => $sumber,
+                // Tambahkan kolom lain jika perlu
+            ]);
+            
+            // --- 4. Kirim Notifikasi (Opsional, Lanjutkan dari Jawaban Sebelumnya) ---
+            $this->kirimNotifikasiAbsensi($absensi); 
+
+            // --- 5. Respon Sukses (Sangat Penting untuk QR Scan) ---
+            if ($isQrScan) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "✅ Absensi **" . ucwords($status) . "** tercatat untuk NIS: {$nis} pada " . $waktu_absensi->format('H:i') . ".",
+                    'status'  => ucwords($status)
+                ], 200);
+            }
+            
+            // Respon untuk Form Manual
+            return redirect()->route('absensi.index')->with('success', 'Data absensi berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            // Log error jika terjadi kegagalan DB
+            \Log::error("Gagal menyimpan absensi untuk NIS {$nis}: " . $e->getMessage());
+            
+            if ($isQrScan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "❌ Error Server saat menyimpan data: " . $e->getMessage(),
+                ], 500);
+            }
+            
+            return back()->with('error', 'Gagal menyimpan absensi. Silakan coba lagi.');
+        }
     }
+
+/**
+ * Fungsi pembantu untuk notifikasi (asumsi Anda memisahkannya)
+ */
+protected function kirimNotifikasiAbsensi($absensi)
+{
+    // ... Logika Notifikasi yang sudah dibahas di jawaban sebelumnya ...
+    // Pastikan Anda memanggil model Siswa dan Notifikasi di sini
+    try {
+        $siswa = Siswa::with('orangtua')->where('nis', $absensi->nis)->first();
+
+        if ($siswa && $siswa->orangtua) {
+            $orangtua = $siswa->orangtua;
+            $status_kehadiran = ucwords($absensi->status);
+            $tanggal_absensi  = Carbon::parse($absensi->tanggal)->isoFormat('dddd, D MMMM Y');
+
+            // Pastikan string interpolasi di luarnya menangani nilai null yang dihasilkan.
+
+            // $pesan = "Halo Bapak/Ibu {$orangtua->nama}. Siswa atas nama **{$siswa->nama}** telah tercatat dengan status kehadiran **{$status_kehadiran}** pada {$tanggal_absensi} pukul " . ($waktu_absensi->absensi?->format('H:i')}";
+        
+            $pesan = "Halo Bapak/Ibu {$orangtua->nama}. Siswa atas nama **{$siswa->nama}** telah tercatat dengan status kehadiran **{$status_kehadiran}** pada {$tanggal_absensi} pukul {$waktu_absensi->format('H:i')}.";
+
+            Notifikasi::create([
+                'id_orangtua'  => $orangtua->id_orangtua,
+                'nis'          => $siswa->nis,
+                'jenis'        => 'absensi',
+                'pesan'        => $pesan,
+                'status_kirim' => 'pending', 
+                'channel'      => 'wa',
+            ]);
+        }
+    } catch (\Exception $e) {
+        \Log::error("Gagal menyimpan notifikasi absensi otomatis: " . $e->getMessage());
+    }
+}
 
     /**
      * Form edit absensi

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class GuruController extends Controller
 {
@@ -31,8 +32,29 @@ class GuruController extends Controller
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'required|string|max:100',
             'no_hp' => 'required|string|max:100',
-            'mapel' => 'nullable|string|max:100'
+            'mapel' => 'nullable|string|max:100',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+            
         ]);
+
+        $fotoPath = null;
+
+        // 1. TANGANI UPLOAD FOTO
+        if ($request->hasFile('foto')) {
+            try {
+                // Simpan file ke storage/app/public/guru_photos
+                // $tempPath akan berisi string seperti 'public/guru_photos/xxxxxxxx.jpg'
+                $tempPath = $request->file('foto')->store('guru_photos', 'public'); 
+                
+                // *** PERBAIKAN KRITIS DI SINI ***
+                // Path yang disimpan ke DB HARUSNYA TANPA 'public/' agar konsisten dengan metode update
+                // $fotoPath = str_replace('public/', '', $tempPath); 
+            
+            } catch (\Exception $e) {
+                // Tangkap error disk, misalnya permission denied
+                return redirect()->back()->withInput()->with('error', 'Gagal menyimpan file ke disk: ' . $e->getMessage());
+            }
+        }
 
         DB::beginTransaction();
         try {
@@ -44,6 +66,7 @@ class GuruController extends Controller
                 'alamat'=>$request->alamat,
                 'no_hp'=> $request->no_hp,
                 'mapel' => $request->mapel ?? null,
+                'foto' => $fotoPath, // Path yang sudah bersih (misal: guru_photos/file.jpg)
             ]);
 
             $user = User::create([
@@ -65,6 +88,10 @@ class GuruController extends Controller
             return redirect()->route('guru.index')->with('success', 'Data guru & akun berhasil dibuat. Password default: password123');
         } catch (\Throwable $e) {
             DB::rollBack();
+            // Jika transaksi DB gagal, hapus foto yang baru di-upload (jika ada)
+            if ($fotoPath) {
+                Storage::delete('public/' . $fotoPath);
+            }
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -76,15 +103,43 @@ class GuruController extends Controller
 
     public function update(Request $request, Guru $guru)
     {
+        // Validasi Email dan NIP mengabaikan data guru saat ini
         $request->validate([
             'nama' => 'required|string|max:100',
             'nip' => 'nullable|string|max:20|unique:guru,nip,' . $guru->id_guru . ',id_guru',
-            'email' => 'required|email|unique:users,email,' . ($guru->id_user ?? 'null') . ',id_user|unique:guru,email,' . $guru->id_guru . ',id_guru',
+            // Perhatikan validasi email untuk user/guru, memastikan unik kecuali untuk dirinya sendiri
+            'email' => [
+                'required',
+                'email',
+                'unique:guru,email,' . $guru->id_guru . ',id_guru',
+                'unique:users,email,' . ($guru->id_user ?? 'null') . ',id_user',
+            ],
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'required|string|max:100',
             'no_hp' => 'required|string|max:100',
-            'mapel' => 'nullable|string|max:100'
+            'mapel' => 'nullable|string|max:100',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        $newFotoPath = $guru->foto;
+
+        // LOGIKA UPDATE FOTO
+        if ($request->hasFile('foto')) {
+            try {
+                // 1. Hapus foto lama jika ada
+                if ($guru->foto) {
+                    // $guru->foto seharusnya sudah bersih dari 'public/'
+                    Storage::delete('public/' . $guru->foto);
+                }
+            
+                // 2. Simpan foto baru dan bersihkan path sebelum disimpan ke DB
+                $tempPath = $request->file('foto')->store('guru_photos', 'public');
+                $newFotoPath = str_replace('public/', '', $tempPath);
+
+            } catch (\Exception $e) {
+                return redirect()->back()->withInput()->with('error', 'Gagal menyimpan file ke disk: ' . $e->getMessage());
+            }
+        }
 
         DB::beginTransaction();
         try {
@@ -98,6 +153,7 @@ class GuruController extends Controller
                 'alamat'=>$request->alamat,
                 'no_hp'=> $request->no_hp,
                 'mapel' => $request->mapel ?? null,
+                'foto' => $newFotoPath,
             ]);
 
             // Update user account if exists
@@ -119,6 +175,10 @@ class GuruController extends Controller
             return redirect()->route('guru.index')->with('success', 'Data guru berhasil diperbarui!');
         } catch (\Throwable $e) {
             DB::rollBack();
+            // Jika transaksi DB gagal, Anda mungkin ingin menghapus foto baru yang tersimpan di disk
+            if ($request->hasFile('foto') && $newFotoPath !== $guru->getOriginal('foto')) {
+                Storage::delete('public/' . $newFotoPath);
+            }
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -126,6 +186,9 @@ class GuruController extends Controller
     public function destroy(Request $request, Guru $guru)
     {
         DB::beginTransaction();
+        
+        $oldFotoPath = $guru->foto; // Ambil path foto sebelum dihapus
+        
         try {
             $deleteUser = $request->input('delete_user', '0') === '1';
 
@@ -136,8 +199,15 @@ class GuruController extends Controller
                 $user = User::where('email', $guru->email)->first();
             }
 
+            // Hapus data guru dari database
             $guru->delete();
 
+            // Hapus foto dari disk
+            if ($oldFotoPath) {
+                 Storage::delete('public/' . $oldFotoPath);
+            }
+
+            // Hapus user jika diminta
             if ($deleteUser && $user) {
                 $user->delete();
             }
@@ -148,5 +218,12 @@ class GuruController extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
         }
+    }
+
+    public function show($id_guru)
+    {
+        $guru = Guru::findOrFail($id_guru); // Cari guru berdasarkan ID
+
+        return view('guru.show', compact('guru')); // Kirim data ke view baru
     }
 }

@@ -17,13 +17,7 @@ class NilaiController extends Controller
         return view('nilai.index', compact('nilai'));
     }
 
-    // ✅ Form tambah nilai
-    // public function create()
-    // {
-    //     $siswa = Siswa::all();
-    //     $mapel = MataPelajaran::all();
-    //     return view('nilai.create', compact('siswa', 'mapel'));
-    // }
+    
     public function create()
     {
         $siswa = Siswa::all();
