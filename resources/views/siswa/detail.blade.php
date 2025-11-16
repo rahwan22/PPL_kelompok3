@@ -96,9 +96,9 @@
 
     {{-- Detail Orang Tua (Bagian Baru) --}}
     <div class="mt-10 p-6 bg-indigo-50 border border-indigo-200 rounded-xl shadow-inner">
-        <h2 class="text-2xl font-bold text-indigo-700 border-b-2 border-indigo-400 mb-4 pb-2">Detail Orang Tua/Wali</h2>
+        <h2 class="text-2xl font-bold text-indigo-700 border-b-2 border-indigo-400 mb-4 pb-2">SEKOLAH DASAR NEGERI SWASTA</h2>
         
-        @if ($siswa->orangtua)
+        <!-- @if ($siswa->orangtua)
             {{-- Asumsi model Siswa memiliki relasi 'orangtua' --}}
             <dl class="space-y-3 text-gray-700">
                 <div class="flex border-b border-indigo-100 pb-2">
@@ -118,7 +118,7 @@
                 </p>
                 <a href="{{ route('siswa.edit', $siswa->nis) }}" class="mt-2 inline-block text-sm text-yellow-700 hover:text-yellow-900 underline">Hubungkan Sekarang</a>
             </div>
-        @endif
+        @endif -->
     </div>
 </div>
 @endsection

@@ -33,6 +33,8 @@
                             <th scope="col" class="py-3">Nama Kelas</th>
                             <th scope="col" class="py-3">Tahun Ajaran</th>
                             <th scope="col" class="py-3">Wali Kelas</th>
+                            {{-- KOLOM BARU --}}
+                            <th scope="col" class="py-3 text-center">Jumlah Siswa</th> 
                             {{-- Tampilkan header Aksi hanya jika role ADALAH admin --}}
                             @if (auth()->user()->role === 'admin')
                                 <th scope="col" class="py-3 text-center">Aksi</th>
@@ -40,9 +42,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- *PENTING: Pastikan variabel yang di-loop adalah $kelas* --}}
+                        {{-- PENTING: Pastikan variabel yang di-loop adalah $kelas --}}
                         @forelse ($kelas as $k) 
-                            <tr>
+                            {{-- Baris Utama Kelas --}}
+                            <tr style="cursor: pointer;" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#siswa-{{ $k->id_kelas }}" 
+                                aria-expanded="false" 
+                                aria-controls="siswa-{{ $k->id_kelas }}"
+                                class="kelas-row"
+                            >
                                 <td>{{ $k->id_kelas }}</td>
                                 <td>
                                     <strong>{{ $k->nama_kelas }}</strong>
@@ -53,30 +62,41 @@
                                         {{ $k->waliKelas->nama ?? 'Belum Ditentukan' }}
                                     </span>
                                 </td>
+                                {{-- Kolom Jumlah Siswa --}}
+                                <td class="text-center">
+                                    <span class="badge bg-primary rounded-pill">
+                                        {{ $k->siswa->count() }}
+                                    </span>
+                                </td>
                                 
                                 {{-- Kolom Aksi (Hanya untuk Admin) --}}
-                                @if (auth()->user()->role === 'admin')
+                                @if (auth()->user()->role === 'admin' )
                                     <td class="text-center">
-                                        {{-- Tombol Edit --}}
-                                        <a href="{{ route('kelas.edit', $k->id_kelas) }}" class="btn btn-primary btn-sm me-2" title="Edit Data">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        
-                                        {{-- Tombol Hapus --}}
-                                        <form action="{{ route('kelas.destroy', $k->id_kelas) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Hapus Data" onclick="return confirm('Apakah Anda yakin ingin menghapus kelas {{ $k->nama_kelas }}? Aksi ini tidak dapat dibatalkan.');">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        <div class="btn-group btn-group-sm" role="group" onclick="event.stopPropagation()">
+                                            <a href="{{ route('kelas.show', $k->id_kelas) }}"  class="btn btn-info btn-sm me-2" title="Detail siswa">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {{-- Tombol Edit --}}
+                                            <a href="{{ route('kelas.edit', $k->id_kelas) }}" class="btn btn-primary btn-sm me-2" title="Edit Data" onclick="event.stopPropagation()">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            
+                                            {{-- Tombol Hapus --}}
+                                            <form action="{{ route('kelas.destroy', $k->id_kelas) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus Data" onclick="event.stopPropagation(); return confirm('Apakah Anda yakin ingin menghapus kelas {{ $k->nama_kelas }}? Aksi ini tidak dapat dibatalkan.');">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 @endif
                             </tr>
                         @empty
                             <tr>
                                 {{-- Penyesuaian colspan agar tabel tidak pecah --}}
-                                @php $colspan = (auth()->user()->role === 'admin') ? 5 : 4; @endphp
+                                @php $colspan = (auth()->user()->role === 'admin') ? 6 : 5; @endphp
                                 <td colspan="{{ $colspan }}" class="text-center py-4 text-muted">
                                     <i class="fas fa-box-open me-2"></i> Belum ada data kelas yang tercatat.
                                 </td>
@@ -88,4 +108,27 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Tambahkan fungsi untuk mencegah collapse saat tombol aksi (edit/hapus) diklik
+    // Di Laravel Blade, kita tambahkan event.stopPropagation() langsung pada onclick di tombol aksi.
+    
+    // Namun, jika Anda ingin efek visual yang lebih baik saat baris kelas diklik (misalnya, warna berubah), 
+    // Anda bisa menambahkan script JQuery atau JS murni di sini, meskipun tidak wajib.
+    // Contoh untuk menambahkan class aktif saat collapse terbuka (memerlukan JQuery):
+    /*
+    $(document).ready(function() {
+        $('.collapse').on('show.bs.collapse', function () {
+            // Temukan baris kelas yang terkait dan tambahkan kelas aktif
+            const classId = $(this).attr('id');
+            $([data-bs-target="#${classId}"]).addClass('table-info');
+        }).on('hide.bs.collapse', function () {
+            // Hapus kelas aktif saat collapse ditutup
+            const classId = $(this).attr('id');
+            $([data-bs-target="#${classId}"]).removeClass('table-info');
+        });
+    });
+    */
+</script>
+
 @endsection

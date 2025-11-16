@@ -21,6 +21,7 @@ class KelasController extends Controller
     {
         // Eager load relasi waliKelas untuk menampilkan nama guru
         $kelas = Kelas::with('waliKelas')->orderBy('tahun_ajaran', 'desc')->orderBy('nama_kelas')->get();
+        $kelas = \App\Models\Kelas::with(['waliKelas', 'siswa'])->get();
         return view('kelas.index', compact('kelas'));
     }
 
@@ -105,5 +106,13 @@ class KelasController extends Controller
         
         $kela->delete();
         return redirect()->route('kelas.index')->with('success', 'Kelas berhasil dihapus.');
+    }
+
+    public function show($id_kelas)
+    {
+        $kelas = Kelas::with(['waliKelas', 'siswa'])
+                    ->findOrFail($id_kelas); 
+        // Note: Pastikan relasi 'siswa' ada di model Kelas
+        return view('kelas.show', compact('kelas'));
     }
 }

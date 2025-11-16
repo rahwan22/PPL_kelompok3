@@ -198,7 +198,7 @@ class SiswaController extends Controller
         $fileName = $nis . '.png';
         $filePath = 'qr/' . $fileName;
 
-        // // Generate QR
+         // Generate QR
         $qr = QrCode::format('png')
             ->size(300)
             ->errorCorrection('H')

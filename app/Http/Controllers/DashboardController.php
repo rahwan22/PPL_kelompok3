@@ -21,32 +21,43 @@ class DashboardController extends Controller
         return view('auth.login', ['title' => 'Login Sistem Sekolah']);
     }
 
-    // Proses login (Revisi: Role Dihilangkan)
+    // Proses login (Revisi: Menambahkan Login via NIP/Email)
     public function loginPost(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            // Input 'email' akan digunakan sebagai penampung untuk Email atau NIP
+            'email' => 'required', // Hapus validasi 'email' format, karena bisa jadi NIP
             'password' => 'required',
-            // Role tidak divalidasi karena diambil dari DB
         ]);
 
-        // 1. Cari user berdasarkan email
-        $user = User::where('email', $request->email)->first();
+        $loginCredential = $request->email;
 
+        // 1. Coba cari user berdasarkan email
+        $user = User::where('email', $loginCredential)->first();
+
+        // 2. Jika tidak ditemukan, coba cari user sebagai Guru berdasarkan NIP
         if (!$user) {
-            return back()->with('error', 'Email tidak ditemukan.');
+            // Asumsi: Jika NIP digunakan, field 'email' di form login berisi NIP
+            $user = User::where('role', 'guru')
+                        ->where('nip', $loginCredential)
+                        ->first();
         }
 
-        // 2. Cek password
+        // 3. Cek apakah user ditemukan (baik dari email maupun NIP)
+        if (!$user) {
+            // Pesan error umum untuk keamanan
+            return back()->with('error', 'Kombinasi Email/NIP dan Password salah.');
+        }
+
+        // 4. Cek password
         if (!Hash::check($request->password, $user->password)) {
-            return back()->with('error', 'Password salah.');
+            return back()->with('error', 'Kombinasi Email/NIP dan Password salah.');
         }
 
-        // 3. Login menggunakan Laravel Auth
+        // 5. Login menggunakan Laravel Auth
         auth()->login($user);
 
-        // 4. Arahkan ke dashboard sesuai role yang ada di database
-        // Logika pengalihan dipindahkan ke fungsi helper redirectToDashboard
+        // 6. Arahkan ke dashboard sesuai role
         return $this->redirectToDashboard($user->role)
                     ->with('success', 'Selamat datang, ' . ucfirst(str_replace('_', ' ', $user->role)) . '!');
     }
@@ -101,9 +112,9 @@ class DashboardController extends Controller
         for ($year = $startYear; $year <= $endYear; $year++) {
             // Anggap Anda menggunakan kolom 'created_at' atau 'tahun_masuk'
             $count = DB::table('siswa')
-                    ->whereYear('created_at', $year) // Atau kolom tanggal pendaftaran lain
-                    ->count();
-                    
+                        ->whereYear('created_at', $year) // Atau kolom tanggal pendaftaran lain
+                        ->count();
+                        
             $annualData[] = [
                 'year' => $year,
                 'count' => $count

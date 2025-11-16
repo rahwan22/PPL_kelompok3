@@ -12,7 +12,9 @@ class NotifikasiController extends Controller
     // 📄 Tampilkan semua notifikasi
     public function index()
     {
-        $notifikasi = Notifikasi::with(['siswa', 'orangtua'])->latest()->get();
+       $notifikasi = Notifikasi::with(['siswa', 'orangtua']) 
+                              ->orderBy('created_at', 'desc')
+                              ->get();
         return view('notifikasi.index', compact('notifikasi'));
     }
 

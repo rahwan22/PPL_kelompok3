@@ -129,9 +129,9 @@
         </div>
 
         {{-- BAGIAN DATA ORANG TUA --}}
-        <h3 class="text-2xl font-semibold text-indigo-700 mt-8 mb-4 border-b pb-2">Pengaturan Orang Tua</h3>
+     <!-- <h3 class="text-2xl font-semibold text-indigo-700 mt-8 mb-4 border-b pb-2">Pengaturan Orang Tua</h3> -->
         
-        <div class="p-4 mb-6 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
+        <!-- <div class="p-4 mb-6 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
             <p class="text-sm font-medium">Anda dapat: **Membuat Orang Tua Baru** (memutus hubungan yang lama), atau **Menghubungkan ke Orang Tua Lain** (di *dropdown*), atau **Membiarkan Hubungan Lama** (kosongkan semua opsi di bawah).</p>
         </div>
 
@@ -156,8 +156,8 @@
                 @error('no_wa')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
-            </div>
-
+            </div> -->
+       
             {{-- OPTION 2: Pilih Orang Tua Yang Sudah Ada --}}
             <!-- <div class="p-4 border border-indigo-300 rounded-lg bg-indigo-100/50">
                 <h4 class="text-lg font-bold text-indigo-700 mb-3">2. Hubungkan ke Orang Tua Lain</h4>
@@ -182,7 +182,7 @@
                 @enderror
             </div> -->
 
-        </div>
+        
 
 
         <div class="mt-8 pt-4 border-t flex justify-end">

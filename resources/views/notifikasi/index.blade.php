@@ -3,39 +3,60 @@
 @section('content')
 <div class="container">
     <h3 class="mb-4">Daftar Notifikasi</h3>
-    <a href="{{ route('notifikasi.create') }}" class="btn btn-primary mb-3">+ Tambah Notifikasi</a>
+    <!-- <a href="{{ route('notifikasi.create') }}" class="btn btn-primary mb-3">+ Tambah Notifikasi Manual</a> -->
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+    
+    @if($notifikasi->isEmpty())
+        <div class="alert alert-info">Belum ada data notifikasi yang tercatat.</div>
+    @endif
 
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Tanggal</th>
-                <th>Siswa</th>
-                <th>Orang Tua</th>
-                <th>Pesan</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($notifikasi as $n)
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
                 <tr>
-                    <td>{{ $n->created_at->format('d/m/Y H:i') }}</td>
-                    <td>{{ $n->siswa->nama ?? '-' }}</td>
-                    <td>{{ $n->orangtua->nama ?? '-' }}</td>
-                    <td>{{ $n->pesan }}</td>
-                    <td>{{ $n->aksi}}</td>
-                    <td>
-                        <span class="badge {{ $n->status == 'Dibaca' ? 'bg-success' : 'bg-warning' }}">
-                            {{ $n->status }}
-                        </span>
-                    </td>   
+                    <th>Tanggal/Waktu</th>
+                    <th>Siswa (NIS)</th>
+                    <th>Orang Tua</th>
+                    <th>Pesan</th>
+                    <th>Status Kirim</th> <!-- Menggantikan 'Status' lama -->
+                    <th>Aksi</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach($notifikasi as $n)
+                    <tr>
+                        <td>{{ $n->created_at->format('d/m/Y H:i') }}</td>
+                        <td>{{ $n->siswa->nama ?? 'Siswa Tidak Ditemukan' }} ({{ $n->nis }})</td>
+                        <td>{{ $n->orangtua->nama ?? 'Orang Tua Tidak Ditemukan' }} (ID: {{ $n->id_orangtua }})</td>
+                        <td>
+                            <!-- Membatasi panjang pesan agar tabel tidak melebar -->
+                            {{ Str::limit($n->pesan, 80) }}
+                        </td>
+                        
+                        <!-- Kolom Status Kirim (Menggunakan status_kirim dari Controller) -->
+                        <td>
+                            @php
+                                $statusKirim = strtolower($n->status_kirim ?? 'pending');
+                                $badgeClass = match ($statusKirim) {
+                                    'terkirim' => 'bg-success',
+                                    'gagal' => 'bg-danger',
+                                    default => 'bg-warning', // pending atau status lain
+                                };
+                            @endphp
+                            <span class="badge {{ $badgeClass }}">
+                                {{ ucfirst($statusKirim) }}
+                            </span>
+                        </td>
+                        
+                        <!-- Kolom Aksi (Tombol) -->
+                        
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection

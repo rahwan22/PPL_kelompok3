@@ -18,6 +18,7 @@
     </div>
 </div>
 
+
 <!-- <div class="mt-3">
     <a href="{{ route('laporan.guru') }}" class="btn btn-outline-primary">Laporan Guru</a>
     <a href="{{ route('laporan.siswa') }}" class="btn btn-outline-success">Laporan Siswa</a>

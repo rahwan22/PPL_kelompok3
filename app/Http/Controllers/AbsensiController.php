@@ -42,23 +42,32 @@ class AbsensiController extends Controller
     public function store(Request $request)
     {
         // Cek apakah request berasal dari QR Scan (JSON) atau Form Manual (HTML Form)
-        // Jika tidak ada 'nis' di request, Laravel akan gagal di validasi JSON.
-        
         $isQrScan = $request->header('Content-Type') === 'application/json';
         
+        // Inisialisasi variabel
+        $nis = null;
+        $sumber = null;
+        $status = null;
+        $lokasi = null;
+        $waktu_absensi = null;
+        $tanggal_hari_ini = null;
+
         // --- 1. Validasi Data ---
         if ($isQrScan) {
             $validatedData = $request->validate([
                 'nis' => 'required|string|max:20|exists:siswa,nis',
+                // Lokasi scan bisa dikirim dari perangkat scanner/browser
+                'lokasi' => 'nullable|string|max:100', 
             ]);
             
             $nis = $validatedData['nis'];
             $sumber = 'qr';
             $waktu_absensi = Carbon::now();
             $tanggal_hari_ini = $waktu_absensi->toDateString();
+            $lokasi = $validatedData['lokasi'] ?? 'Perangkat QR';
             
         } else {
-            // Logika untuk Form Absensi Manual (Jika Anda menggunakan Controller yang sama)
+            // Logika untuk Form Absensi Manual
             $validatedData = $request->validate([
                 'nis'     => 'required|string|max:20|exists:siswa,nis',
                 'tanggal' => 'required|date',
@@ -70,57 +79,58 @@ class AbsensiController extends Controller
             
             $nis = $validatedData['nis'];
             $sumber = 'manual';
-            $waktu_absensi = Carbon::parse($validatedData['tanggal'] . ' ' . ($datetime['jam'] ?? '00:00:00'));
+            
+            // *** PERBAIKAN UTAMA: Mengganti $datetime dengan $validatedData ***
+            // Ini memastikan jam yang diinput user (H:i) digunakan
+            $waktu_absensi = Carbon::parse($validatedData['tanggal'] . ' ' . ($validatedData['jam'] ?? '00:00:00'));
+            
             $tanggal_hari_ini = $validatedData['tanggal'];
+            $status = strtolower($validatedData['status']);
+            $lokasi = $validatedData['lokasi'];
         }
 
-        // --- 2. Cek Duplikasi Absensi (Hanya untuk QR Scan / Hadir/Terlambat) ---
-        // Cek apakah siswa sudah absen HADIR atau TERLAMBAT hari ini
-        if ($isQrScan) {
+        // --- 2. Cek Duplikasi Absensi (Hanya untuk Hadir/Terlambat) ---
+        if ($status !== 'izin' && $status !== 'sakit' && $status !== 'alpa') {
             $existingAbsensi = Absensi::where('nis', $nis)
                 ->whereDate('tanggal', $tanggal_hari_ini)
                 ->whereIn('status', ['hadir', 'terlambat'])
                 ->first();
                 
             if ($existingAbsensi) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "❌ Siswa ini sudah absen ({$existingAbsensi->status}) hari ini pada pukul " . Carbon::parse($existingAbsensi->waktu)->format('H:i') . ".",
-                    'status'  => $existingAbsensi->status
-                ], 200);
+                // Respon jika duplikasi
+                $errorMessage = "❌ Siswa ini sudah absen ({$existingAbsensi->status}) hari ini pada pukul " . Carbon::parse($existingAbsensi->jam)->format('H:i') . ".";
+                
+                if ($isQrScan) {
+                    return response()->json(['success' => false, 'message' => $errorMessage, 'status' => $existingAbsensi->status], 200);
+                }
+                return back()->with('error', $errorMessage);
             }
 
-            // Tentukan Status (Hadir atau Terlambat)
-            // Ganti dengan jam masuk yang sebenarnya, contoh: 07:00
-            $jam_masuk_target = Carbon::createFromTimeString('07:00:00'); 
-            
-            $status = $waktu_absensi->greaterThan($jam_masuk_target) ? 'terlambat' : 'hadir';
-            $lokasi = 'Perangkat QR'; // Lokasi default untuk absensi QR
+            // Tentukan Status untuk QR Scan / Hadir default
+            if ($isQrScan) {
+                // Ganti dengan jam masuk yang sebenarnya, contoh: 07:00
+                $jam_masuk_target = Carbon::createFromTimeString('07:00:00'); 
+                $status = $waktu_absensi->greaterThan($jam_masuk_target) ? 'terlambat' : 'hadir';
+            }
         }
         
-        // Jika manual, ambil status dan lokasi dari validatedData
-        if (!$isQrScan) {
-            $status = strtolower($validatedData['status']);
-            $lokasi = $validatedData['lokasi'];
-        }
-
-
         // --- 3. Simpan Absensi ---
         try {
             $absensi = Absensi::create([
                 'nis'     => $nis,
-                'waktu'   => $waktu_absensi,
+                // *** PERBAIKAN: Memformat Carbon object ke string TIME (H:i:s) ***
+                'jam'     => $waktu_absensi->format('H:i:s'), 
                 'tanggal' => $tanggal_hari_ini,
                 'status'  => $status,
                 'lokasi'  => $lokasi,
                 'sumber'  => $sumber,
-                // Tambahkan kolom lain jika perlu
+                'id_user' => auth()->check() ? auth()->id() : null, // Catat ID Guru/Admin
             ]);
             
-            // --- 4. Kirim Notifikasi (Opsional, Lanjutkan dari Jawaban Sebelumnya) ---
+            // --- 4. Kirim Notifikasi (Opsional) ---
             $this->kirimNotifikasiAbsensi($absensi); 
 
-            // --- 5. Respon Sukses (Sangat Penting untuk QR Scan) ---
+            // --- 5. Respon Sukses ---
             if ($isQrScan) {
                 return response()->json([
                     'success' => true,
@@ -133,7 +143,6 @@ class AbsensiController extends Controller
             return redirect()->route('absensi.index')->with('success', 'Data absensi berhasil ditambahkan.');
 
         } catch (\Exception $e) {
-            // Log error jika terjadi kegagalan DB
             \Log::error("Gagal menyimpan absensi untuk NIS {$nis}: " . $e->getMessage());
             
             if ($isQrScan) {
@@ -148,12 +157,10 @@ class AbsensiController extends Controller
     }
 
 /**
- * Fungsi pembantu untuk notifikasi (asumsi Anda memisahkannya)
+ * Fungsi pembantu untuk notifikasi
  */
 protected function kirimNotifikasiAbsensi($absensi)
 {
-    // ... Logika Notifikasi yang sudah dibahas di jawaban sebelumnya ...
-    // Pastikan Anda memanggil model Siswa dan Notifikasi di sini
     try {
         $siswa = Siswa::with('orangtua')->where('nis', $absensi->nis)->first();
 
@@ -161,12 +168,12 @@ protected function kirimNotifikasiAbsensi($absensi)
             $orangtua = $siswa->orangtua;
             $status_kehadiran = ucwords($absensi->status);
             $tanggal_absensi  = Carbon::parse($absensi->tanggal)->isoFormat('dddd, D MMMM Y');
+            
+            // *** PERBAIKAN: Menggunakan $absensi->jam yang sudah tersimpan di DB ***
+            // Parsing string waktu ('H:i:s') dari DB ke Carbon untuk diformat ('H:i')
+            $waktu_tercatat = Carbon::parse($absensi->jam)->format('H:i');
 
-            // Pastikan string interpolasi di luarnya menangani nilai null yang dihasilkan.
-
-            // $pesan = "Halo Bapak/Ibu {$orangtua->nama}. Siswa atas nama **{$siswa->nama}** telah tercatat dengan status kehadiran **{$status_kehadiran}** pada {$tanggal_absensi} pukul " . ($waktu_absensi->absensi?->format('H:i')}";
-        
-            $pesan = "Halo Bapak/Ibu {$orangtua->nama}. Siswa atas nama **{$siswa->nama}** telah tercatat dengan status kehadiran **{$status_kehadiran}** pada {$tanggal_absensi} pukul {$waktu_absensi->format('H:i')}.";
+            $pesan = "Halo Bapak/Ibu {$orangtua->nama}. Siswa atas nama **{$siswa->nama}** telah tercatat dengan status kehadiran **{$status_kehadiran}** pada {$tanggal_absensi} pukul {$waktu_tercatat}.";
 
             Notifikasi::create([
                 'id_orangtua'  => $orangtua->id_orangtua,
@@ -201,17 +208,22 @@ protected function kirimNotifikasiAbsensi($absensi)
             'status' => 'required|in:hadir,terlambat,izin,sakit,alpa',
             'sumber' => 'required|in:scan,manual',
             'tanggal' => 'required|date',
-            'lokasi' => 'nullable|string|max:100', // *** PERUBAHAN: Validasi Lokasi Update ***
+            'jam'     => 'nullable|date_format:H:i:s', // Menerima H:i:s
+            'lokasi' => 'nullable|string|max:100', 
         ]);
 
         $absensi = Absensi::findOrFail($id);
+        
+        // Ambil waktu dari request, jika ada, pastikan formatnya benar
+        $jamUpdate = $request->has('jam') ? Carbon::parse($request->jam)->format('H:i:s') : $absensi->jam;
+        
         $absensi->update([
             'tanggal' => $request->tanggal,
-            'status' => strtolower($request->status), // Pastikan status disimpan dalam huruf kecil
+            'status' => strtolower($request->status),
             'sumber' => $request->sumber,
-            'jam' => $request->jam ?? $absensi->jam,
-            'id_user' => auth()->check() ? auth()->id() : null, // Catat ID Guru/Admin yang mengupdate
-            'lokasi' => $request->lokasi, // *** PERUBAHAN: Menyimpan Lokasi Update ***
+            'jam' => $jamUpdate, // Gunakan jam yang sudah diformat atau jam lama
+            'id_user' => auth()->check() ? auth()->id() : null, 
+            'lokasi' => $request->lokasi,
         ]);
 
         return redirect()->route('absensi.index')->with('success', 'Data absensi berhasil diperbarui!');
@@ -235,6 +247,10 @@ protected function kirimNotifikasiAbsensi($absensi)
     /**
      * Metode internal untuk menangani permintaan absensi dari Scan QR.
      * Mengembalikan Respons JSON.
+     *
+     * CATATAN: Fungsi ini tampaknya tidak terpakai karena logika QR Scan sudah
+     * ditangani di metode store(). Saya akan menjaganya tetap konsisten 
+     * dengan perbaikan format jam.
      */
     protected function handleQrScanStore(Request $request)
     {
@@ -242,9 +258,9 @@ protected function kirimNotifikasiAbsensi($absensi)
         try {
             $request->validate([
                 'nis' => 'required|string|exists:siswa,nis',
-                'lokasi' => 'nullable|string|max:100', // *** PERUBAHAN: Validasi Lokasi Scan ***
+                'lokasi' => 'nullable|string|max:100',
             ]);
-        } catch (ValidationException $e) { // Menggunakan ValidationException yang diimpor
+        } catch (ValidationException $e) { 
              // Jika NIS tidak ditemukan
              return response()->json([
                  'success' => false,
@@ -253,14 +269,14 @@ protected function kirimNotifikasiAbsensi($absensi)
         }
 
         $nis = $request->input('nis');
-        $lokasi = $request->input('lokasi'); // *** PERUBAHAN: Ambil Lokasi ***
+        $lokasi = $request->input('lokasi') ?? 'Perangkat Scan';
         $today = Carbon::today();
+        $currentDateTime = Carbon::now();
 
         // 2. Cari Siswa
         $siswa = Siswa::where('nis', $nis)->first(); 
 
         // 3. Cek apakah siswa sudah absensi hari ini (Hadir, Terlambat)
-        // Pastikan status yang dicari sesuai dengan ENUM (huruf kecil)
         $sudahAbsen = Absensi::where('nis', $nis)
                              ->whereDate('tanggal', $today)
                              ->whereIn('status', ['hadir', 'terlambat']) 
@@ -270,18 +286,17 @@ protected function kirimNotifikasiAbsensi($absensi)
              // Jika sudah absen, kembalikan JSON
              return response()->json([
                  'success' => false,
-                 'message' => '⚠️ ' . $siswa->nama . ' sudah absen hari ini pada ' . $sudahAbsen->jam . ' dengan status ' . ucfirst($sudahAbsen->status) . '.',
+                 'message' => '⚠️ ' . $siswa->nama . ' sudah absen hari ini pada ' . Carbon::parse($sudahAbsen->jam)->format('H:i') . ' dengan status ' . ucfirst($sudahAbsen->status) . '.',
              ], 409); // 409 Conflict
         }
         
         // 4. Tentukan Status Awal (Hadir atau Terlambat)
         // Atur batas waktu masuk (Contoh: Jam 07:15:00)
         $batasWaktuMasuk = Carbon::createFromTime(7, 15, 0); 
-        $currentDateTime = Carbon::now();
         
-        $statusAbsensi = 'hadir'; // Status awal: hadir (huruf kecil)
+        $statusAbsensi = 'hadir'; 
         if ($currentDateTime->greaterThan($batasWaktuMasuk)) {
-             $statusAbsensi = 'terlambat'; // Status: terlambat (huruf kecil)
+             $statusAbsensi = 'terlambat'; 
         }
 
         // 5. Catat Absensi
@@ -291,9 +306,10 @@ protected function kirimNotifikasiAbsensi($absensi)
                 'tanggal' => $today,
                 'status' => $statusAbsensi,
                 'sumber' => 'scan',
-                'jam' => $currentDateTime->format('H:i:s'),
-                'id_user' => auth()->check() ? auth()->id() : null, // Catat ID Guru/Admin yang mengawasi scan
-                'lokasi' => $lokasi, // *** PERUBAHAN: Menyimpan Lokasi Scan ***
+                // *** PERBAIKAN: Memformat waktu_absensi ke string TIME (H:i:s) ***
+                'jam' => $currentDateTime->format('H:i:s'), 
+                'id_user' => auth()->check() ? auth()->id() : null,
+                'lokasi' => $lokasi, 
             ]);
 
             // Kembalikan JSON dengan pesan sukses
@@ -302,7 +318,7 @@ protected function kirimNotifikasiAbsensi($absensi)
                 'message' => '✅ Absensi ' . $siswa->nama . ' berhasil dicatat. Status: ' . ucfirst($statusAbsensi) . '.',
                 'nama' => $siswa->nama,
                 'status' => $statusAbsensi,
-                'lokasi' => $lokasi, // Mengembalikan lokasi dalam respons
+                'lokasi' => $lokasi, 
             ], 200);
 
         } catch (\Exception $e) {

@@ -2,7 +2,9 @@
 
 @section('content')
 <div class="container mt-4">
-    <center><h3 class="mb-3">Data Guru</h3></center>
+    <h2 class="h3 font-weight-bold text-primary text-center m-0">
+            <i class="fas fa-chalkboard-teacher me-2"></i> Daftar Guru
+        </h2>
     
     @if (auth()->user()->role !== 'kepala_sekolah')
         <a href="{{ route('guru.create') }}" class="btn btn-success mb-3">+ Tambah Guru</a>
@@ -21,7 +23,7 @@
                 
                 
                  @if (auth()->user()->role === 'admin')
-                <th>Aksi</th>
+                <th><center>Aksi</center></th>
                  @endif
             </tr>
         </thead>

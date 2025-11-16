@@ -22,8 +22,9 @@
             <p>{{ \App\Models\Kelas::count() }}</p>
         </div>
         </div>
-    
 </div>
+
+
 
 <!-- <div class="mt-3">
     <a href="{{ route('absensi.scan') }}" class="btn btn-outline-success">Scan Absensi Siswa</a>

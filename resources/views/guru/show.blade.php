@@ -26,7 +26,7 @@
                         @endif
                     </div>
                 @endif
-                <p class="text-center mt-2 text-gray-600 text-sm font-medium">Foto Guru</p>
+                <p class="text-center mt-2 text-gray-600 text-sm font-medium">{{ $guru->nama }}</p>
             </div>
         </div>
 
