@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container mt-4">
     <center><h3 class="mb-3">Data Guru</h3></center>
     
