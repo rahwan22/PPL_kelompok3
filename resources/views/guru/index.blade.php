@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container mt-4">
     <h2 class="h3 font-weight-bold text-primary text-center m-0">
             <i class="fas fa-chalkboard-teacher me-2"></i> Daftar Guru
