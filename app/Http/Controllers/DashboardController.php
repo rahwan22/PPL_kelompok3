@@ -10,6 +10,8 @@ use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Nilai;
 use App\Models\Absensi;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -91,6 +93,22 @@ class DashboardController extends Controller
     // Dashboard admin
     public function admin()
     {
+
+        $startYear = 2010;
+        $endYear = Carbon::now()->year;
+        $annualData = [];
+
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            // Anggap Anda menggunakan kolom 'created_at' atau 'tahun_masuk'
+            $count = DB::table('siswa')
+                    ->whereYear('created_at', $year) // Atau kolom tanggal pendaftaran lain
+                    ->count();
+                    
+            $annualData[] = [
+                'year' => $year,
+                'count' => $count
+            ];
+        }
         // Pengecekan Middleware/Logic Role (Pastikan Anda menggunakan middleware di routes/web.php)
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Akses ditolak. Anda bukan Admin.');
@@ -103,6 +121,7 @@ class DashboardController extends Controller
             'total_kelas' => Kelas::count(),
             'total_nilai' => Nilai::count(),
             'total_absensi' => Absensi::count(),
+            'siswaTahunan' => $annualData,
         ];
 
         return view('dashboard.admin', $data);
