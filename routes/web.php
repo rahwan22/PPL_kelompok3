@@ -9,6 +9,7 @@ use App\Http\Controllers\KelasController;
 use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\NotifikasiController;
 
 
 
@@ -89,12 +90,13 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     // --- Rute Absensi QR (PENTING) ---
     Route::get('/scan', [AbsensiController::class, 'scanForm'])->name('absensi.scan');
     
-    // Route::get('/kelas', [KelasController::class, 'index'])->name('semua.kelas');
-    // Route::get('mapel', [MataPelajaranController::class, 'index'])->name('guru.mapel');
+    Route::get('semua/kelas', [KelasController::class, 'index'])->name('lihat.kelas');
+    Route::get('semua/mapel', [MataPelajaranController::class, 'index'])->name('lihat.mapel');
     
 
     // --- Rute Nilai --
     Route::resource('nilai', NilaiController::class);
+    Route::resource('notifikasi', NotifikasiController::class);
 
 
     

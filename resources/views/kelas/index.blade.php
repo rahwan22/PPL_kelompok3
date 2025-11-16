@@ -8,7 +8,7 @@
     </h2>
 
     {{-- Tombol Tambah Kelas (Hanya terlihat jika role ADALAH admin) --}}
-    @if (auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+    @if (auth()->user()->role === 'admin')
         <a href="{{ route('kelas.create') }}" class="btn btn-success mb-4 rounded-pill shadow-sm">
             <i class="fas fa-plus me-1"></i> Tambah Kelas
         </a>
@@ -34,7 +34,7 @@
                             <th scope="col" class="py-3">Tahun Ajaran</th>
                             <th scope="col" class="py-3">Wali Kelas</th>
                             {{-- Tampilkan header Aksi hanya jika role ADALAH admin --}}
-                            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+                            @if (auth()->user()->role === 'admin')
                                 <th scope="col" class="py-3 text-center">Aksi</th>
                             @endif
                         </tr>
@@ -55,10 +55,10 @@
                                 </td>
                                 
                                 {{-- Kolom Aksi (Hanya untuk Admin) --}}
-                                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+                                @if (auth()->user()->role === 'admin')
                                     <td class="text-center">
                                         {{-- Tombol Edit --}}
-                                        <a href="{{ route('kelas.edit', $k->id_kelas) }}" class="btn btn-warning btn-sm me-2" title="Edit Data">
+                                        <a href="{{ route('kelas.edit', $k->id_kelas) }}" class="btn btn-primary btn-sm me-2" title="Edit Data">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         
@@ -76,7 +76,7 @@
                         @empty
                             <tr>
                                 {{-- Penyesuaian colspan agar tabel tidak pecah --}}
-                                @php $colspan = (auth()->user()->role === 'admin' || auth()->user()->role === 'guru') ? 5 : 4; @endphp
+                                @php $colspan = (auth()->user()->role === 'admin') ? 5 : 4; @endphp
                                 <td colspan="{{ $colspan }}" class="text-center py-4 text-muted">
                                     <i class="fas fa-box-open me-2"></i> Belum ada data kelas yang tercatat.
                                 </td>

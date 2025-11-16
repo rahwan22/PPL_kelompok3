@@ -24,6 +24,7 @@ class Absensi extends Model
     ];
 
     protected $casts = [
+        // 'waktu' => 'datetime',
         'tanggal' => 'date',
         'synced' => 'boolean',
     ];

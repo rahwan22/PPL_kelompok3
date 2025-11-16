@@ -27,18 +27,12 @@
                     <td>{{ $n->siswa->nama ?? '-' }}</td>
                     <td>{{ $n->orangtua->nama ?? '-' }}</td>
                     <td>{{ $n->pesan }}</td>
+                    <td>{{ $n->aksi}}</td>
                     <td>
                         <span class="badge {{ $n->status == 'Dibaca' ? 'bg-success' : 'bg-warning' }}">
                             {{ $n->status }}
                         </span>
-                    </td>
-                    <td>
-                        <a href="{{ route('notifikasi.edit', $n->id_notifikasi) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('notifikasi.destroy', $n->id_notifikasi) }}" method="POST" class="d-inline">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus notifikasi ini?')">Hapus</button>
-                        </form>
-                    </td>
+                    </td>   
                 </tr>
             @endforeach
         </tbody>

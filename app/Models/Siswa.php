@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\OrangTua;
 
 class Siswa extends Model
 {
@@ -17,7 +18,10 @@ class Siswa extends Model
     protected $fillable = [
         'nis',
         'nama',
+        'jenis_kelamin',
         'tanggal_lahir',
+        'alamat',
+        'foto',
         'id_kelas',
         'qr_code',
         'id_orangtua',
@@ -44,7 +48,7 @@ class Siswa extends Model
     // 🔹 Relasi: Siswa memiliki satu orangtua
     public function orangtua()
     {
-        return $this->belongsTo(Orangtua::class, 'id_orangtua');
+        return $this->belongsTo(Orangtua::class, 'id_orangtua', 'id_orangtua');
     }
 
     // 🔹 Relasi: Siswa memiliki banyak absensi

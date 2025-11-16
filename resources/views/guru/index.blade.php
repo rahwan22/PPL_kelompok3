@@ -18,11 +18,8 @@
                 <th>No</th>
                 <th>Nama</th>
                 <th>NIP</th>
-                <th>Jenis Kelamin</th>
-                <th>Alamat</th>
-                <th>No_Hp</th>
-                <th>Email</th>
                 <th>Mapel</th>
+                
                 
                  @if (auth()->user()->role === 'admin')
                 <th>Aksi</th>
@@ -35,15 +32,18 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $g->nama }}</td>
                 <td>{{ $g->nip }}</td>
-                <td>{{ $g->jenis_kelamin }}</td>
-                <td>{{ $g->alamat }}</td>
-                <td>{{ $g->no_hp }}</td>
-                <td>{{ $g->email }}</td>
                 <td>{{ $g->mapel }}</td>
+                
 
                  @if (auth()->user()->role === 'admin')
                 <td class="text-center">
-                    <a href="{{ route('guru.edit', $g->id_guru) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{{ route('guru.show', $g->id_guru) }}"  class="btn btn-info btn-sm me-2" title="Detail siswa">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    <a href="{{ route('guru.edit', $g->id_guru) }}" class="btn btn-primary btn-sm me-2" title="Edit Data">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
                 <form id="delete-form-{{ $g->id_guru }}" action="{{ route('guru.destroy', $g->id_guru) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')

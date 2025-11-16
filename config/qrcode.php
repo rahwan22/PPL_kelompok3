@@ -20,4 +20,9 @@ return [
             'gd' => \BaconQrCode\Renderer\Image\GdImageBackEnd::class,
             // Anda bisa hapus 'imagick' dari sini jika Anda mau, tapi biasanya dibiarkan saja.
         ],
+
+
+        // config/qrcode.php
+
+    'default' => env('QR_CODE_DRIVER', 'gd'), // BARIS BARU: Paksa GD sebagai default
 ];

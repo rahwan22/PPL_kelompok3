@@ -3,40 +3,42 @@
 @section('content')
 <div class="container mt-4">
     <center><h3 class="mb-3">Data Siswa</h3></center>
+    
+    {{-- Tombol Tambah Siswa --}}
     @if (auth()->user()->role !== 'kepala_sekolah')
         <a href="{{ route('siswa.create') }}" class="btn btn-success mb-3">+ Tambah Siswa</a>
     @endif
-
-    @if (session('success'))
+    
+    @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>NIS</th>
-                <th>Nama</th>
-                <th>Jenis Kelamin</th>
-                <th>Kelas</th>
-                <th>Orang Tua</th>
-                <th>Status</th>
-                @if (auth()->user()->role === 'admin')
-                <th>Aksi</th>
-                 @endif
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($siswa as $s)
-                <tr>
-                    <td>{{ $s->nis }}</td>
-                    <td>{{ $s->nama }}</td>
-                    <td>{{ $s->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
-                    <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
-                    <td>{{ $s->orangtua->nama ?? '-' }}</td>
-                    <td>{{ $s->aktif ? 'Aktif' : 'Nonaktif' }}</td>
+    {{-- Tabel Utama --}}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr class="text-center">
+                    <th>No</th>
+                    <th>NIS</th>
+                    <th>Nama Siswa</th>
+                    <th>Kelas</th>
                     
                     @if (auth()->user()->role === 'admin')
-                    <td>
+                        <th scope="col" class="py-3 text-center">Aksi</th>
+                    @endif
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($siswa as $s)
+                <tr>
+                    {{-- Menggunakan $loop->iteration untuk No Urut --}}
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $s->nis }}</td>
+                    <td>{{ $s->nama }}</td>
+                    <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
+                    
+                    @if (auth()->user()->role === 'admin')
+                    <td class="text-center">
                         <a href="{{ route('admin.siswa.generateQR', $s->nis) }}" class="btn btn-sm btn-primary">
                             Generate QR
                         </a>
@@ -46,19 +48,36 @@
                                 Download QR
                             </a>
                         @endif
-
-                        <a href="{{ route('siswa.edit', $s->nis) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('siswa.destroy', $s->nis) }}" method="POST" style="display:inline;">
+                        {{-- Tombol Detail --}}
+                        <a href="{{ route('siswa.show', $s->nis) }}" class="btn btn-info btn-sm me-2" title="Detail siswa">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        
+                        {{-- Tombol Edit --}}
+                        <a href="{{ route('siswa.edit', $s->nis) }}" class="btn btn-warning btn-sm me-2" title="Edit Data">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        
+                        {{-- Tombol Hapus (Dibuat d-inline dan menggunakan alert konfirmasi standar) --}}
+                        <form action="{{ route('siswa.destroy', $s->nis) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus data siswa {{ $s->nama }}?')">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus data?')">Hapus</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                         </form>
                     </td>
-                        @endif
-                    
+                    @endif
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    {{-- Pagination (jika data Siswa menggunakan pagination) --}}
+    @if (method_exists($siswa, 'links'))
+        <div class="mt-3">
+            {{ $siswa->links() }}
+        </div>
+    @endif
+    
 </div>
 @endsection

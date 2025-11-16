@@ -296,14 +296,17 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('absensi.index') }}"><i
                                     class="bi bi-card-checklist"></i> LIhat Absensi</a></li>
 
-                        <li class="nav-item"><a class="nav-link" href="{{ route('kelas.index') }}"><i
+                        <li class="nav-item"><a class="nav-link" href="{{ route('lihat.kelas') }}"><i
                                     class="bi bi-people"></i> Lihat Kelas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('mapel.index') }}"><i
+                        <li class="nav-item"><a class="nav-link" href="{{ route('lihat.mapel') }}"><i
                                     class="bi bi-journal-bookmark"></i> Lihat Mapel</a></li>
 
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}"><i
                                     class="bi bi-pencil-square"></i> Input Nilai</a></li>
+
+                        <li class="nav-item"><a class="nav-link" href="{{ route('notifikasi.index') }}"><i
+                                    class="bi bi-pencil-square"></i> Notifikasi</a></li>
                     @endif
                 </ul>
             </div>
