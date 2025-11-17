@@ -103,5 +103,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 });
 
 
-
+Route::get('/yang_utama', function () {
+    return view('layout.app');
+    });
 
