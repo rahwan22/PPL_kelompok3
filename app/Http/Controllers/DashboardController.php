@@ -11,6 +11,11 @@ use App\Models\Kelas;
 use App\Models\Nilai;
 use App\Models\Absensi;
 use Carbon\Carbon;
+
+
+use Illuminate\Support\Facades\Auth;
+
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -172,5 +177,38 @@ class DashboardController extends Controller
         ];
 
         return view('dashboard.guru', $data);
+    }
+
+      
+    public function editPassword()
+    {
+        $user = Auth::user();
+        return view('profile.edit-password', compact('user'));
+    }
+
+    /**
+     * Memperbarui sandi pengguna.
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'], // Memeriksa sandi lama
+            'password' => ['required', 'confirmed', Password::defaults()], // Sandi baru dan konfirmasi
+        ], [
+            'current_password.current_password' => 'Sandi lama salah.',
+            'password.required' => 'Sandi baru wajib diisi.',
+            'password.confirmed' => 'Konfirmasi sandi tidak cocok.',
+        ]);
+
+        // Ambil user yang sedang login
+        $user = Auth::user();
+
+        // Update sandi
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Redirect dengan pesan sukses
+        return redirect()->route('dashboard.guru')->with('success', 'Sandi berhasil diubah!');
     }
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\NotifikasiController;
 
 
 
+
 // Rute Halaman Utama
 Route::get('/u', function () {
     return view('welcome');
@@ -30,7 +31,12 @@ Route::post('logout', [DashboardController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     // Rute dashboard utama yang biasanya mengarahkan berdasarkan peran (role)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Route untuk menampilkan form Ubah Sandi
+    Route::get('/ubah-sandi', [DashboardController::class, 'editPassword'])->name('password.edit');
+    Route::post('/ubah-sandi', [DashboardController::class, 'updatePassword'])->name('password.update');
 });
+
 
 
 // ===================== 3. ADMIN ACCESS (ROLE: ADMIN) =====================
@@ -68,6 +74,9 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->group(function () {
     Route::get('laporan/mapel', [MataPelajaranController::class, 'index'])->name('laporan.mapel');
     Route::get('laporan/kelas', [KelasController::class, 'index'])->name('laporan.kelas');
 
+
+    // Route::get('laporan/gurulaporan', [GuruController::class, 'laporanguru'])->name('laporanguru.guru');
+
     // Laporan Guru — memakai VIEW statis buatanmu
     Route::get('laporan/guru', function () {
         return view('guru.laporanGuru');
@@ -85,6 +94,8 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     
     Route::get('dashboard/guru', [DashboardController::class, 'guru'])->name('dashboard.guru');
 
+   
+
     Route::resource('absensi', AbsensiController::class);
 
     // --- Rute Absensi QR (PENTING) ---
@@ -92,6 +103,8 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     
     Route::get('semua/kelas', [KelasController::class, 'index'])->name('lihat.kelas');
     Route::get('semua/mapel', [MataPelajaranController::class, 'index'])->name('lihat.mapel');
+
+
     
 
     // --- Rute Nilai --

@@ -244,14 +244,7 @@ protected function kirimNotifikasiAbsensi($absensi)
     // FUNGSI UNTUK MENANGANI SCAN QR SISWA OLEH GURU 
     // =================================================================
 
-    /**
-     * Metode internal untuk menangani permintaan absensi dari Scan QR.
-     * Mengembalikan Respons JSON.
-     *
-     * CATATAN: Fungsi ini tampaknya tidak terpakai karena logika QR Scan sudah
-     * ditangani di metode store(). Saya akan menjaganya tetap konsisten 
-     * dengan perbaikan format jam.
-     */
+
     protected function handleQrScanStore(Request $request)
     {
         // 1. Validasi Input (Hanya butuh NIS dari scan + Lokasi)

@@ -226,4 +226,12 @@ class GuruController extends Controller
 
         return view('guru.show', compact('guru')); // Kirim data ke view baru
     }
+    
+
+    
+    public function laporanguru()
+    {
+        
+        return view('guru.laporanGuruKelas1');
+    }
 }

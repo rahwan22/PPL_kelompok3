@@ -19,6 +19,8 @@ class KelasController extends Controller
      */
     public function index()
     {
+
+        
         // Eager load relasi waliKelas untuk menampilkan nama guru
         $kelas = Kelas::with('waliKelas')->orderBy('tahun_ajaran', 'desc')->orderBy('nama_kelas')->get();
         $kelas = \App\Models\Kelas::with(['waliKelas', 'siswa'])->get();

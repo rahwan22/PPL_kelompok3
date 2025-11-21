@@ -45,7 +45,7 @@
                                 <small class="text-muted">{{ $n->siswa->nis ?? '-' }}</small>
                             </td>
                             <td>{{ $n->mapel->nama_mapel ?? 'N/A' }}</td>
-                            <td>{{ $n->id_kelas }}</td>
+                            <td>{{ $n->kelas->nama_kelas ?? $n->id_kelas ?? 'N/A' }}</td>
                             <td class="text-center">{{ $n->nilai_tugas }}</td>
                             <td class="text-center">{{ $n->nilai_uts }}</td>
                             <td class="text-center">{{ $n->nilai_uas }}</td>

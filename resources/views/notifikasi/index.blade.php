@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h3 class="mb-4">Daftar Notifikasi</h3>
-    <!-- <a href="{{ route('notifikasi.create') }}" class="btn btn-primary mb-3">+ Tambah Notifikasi Manual</a> -->
+    <a href="{{ route('notifikasi.create') }}" class="btn btn-primary mb-3">+ Tambah Notifikasi Manual</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

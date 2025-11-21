@@ -34,5 +34,10 @@ class Nilai extends Model
     {
         return $this->belongsTo(MataPelajaran::class, 'id_mapel', 'id_mapel');
     }
+    public function kelas()
+{
+    // Asumsi: foreign key di tabel 'nilai' adalah 'id_kelas' dan primary key di tabel 'kelas' adalah 'id'
+    return $this->belongsTo(Kelas::class, 'id_kelas', 'id');
+}
     
 }

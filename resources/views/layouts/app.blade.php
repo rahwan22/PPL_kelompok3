@@ -228,9 +228,12 @@
                 <li class="nav-item me-3 text-white">
                     👋 Hai, {{ Auth::user()->nama ?? 'Pengguna' }}
                 </li>
+                
 
                 <li class="nav-item">
+                    
                     <a class="nav-link" href="{{ route('logout') }}"
+              
                         onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                         Logout
                     </a>
@@ -305,6 +308,14 @@
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('notifikasi.index') }}"><i
                                     class="bi bi-pencil-square"></i> Notifikasi</a></li>
+                        
+
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('password.edit') }}">
+                                <i class="bi bi-lock"></i> Ubah Sandi
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

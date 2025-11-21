@@ -27,5 +27,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function kelasWali()
+    {
+        return $this->hasOne(\App\Models\Kelas::class, 'wali_kelas_id', 'id_duru');
+    }
+
     public $timestamps = true;
 }
