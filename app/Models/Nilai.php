@@ -15,12 +15,13 @@ class Nilai extends Model
     protected $fillable = [
         'nis',
         'id_mapel',
+        'id_kelas',
         'nilai_tugas',
         'nilai_uts',
         'nilai_uas',
         'nilai_akhir',
-        'semester',
         'catatan',
+        'semester',
     ];
 
     // 🔗 Relasi ke model Siswa
@@ -34,10 +35,13 @@ class Nilai extends Model
     {
         return $this->belongsTo(MataPelajaran::class, 'id_mapel', 'id_mapel');
     }
+
+    /**
+     * ✅ PERBAIKAN: Menggunakan 'id_kelas' sebagai foreign key dan owner key,
+     * sesuai dengan struktur migration Anda.
+     */
     public function kelas()
-{
-    // Asumsi: foreign key di tabel 'nilai' adalah 'id_kelas' dan primary key di tabel 'kelas' adalah 'id'
-    return $this->belongsTo(Kelas::class, 'id_kelas', 'id');
-}
-    
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
+    }
 }

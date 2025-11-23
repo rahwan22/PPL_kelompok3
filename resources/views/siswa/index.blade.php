@@ -43,6 +43,9 @@
                             <i class="fas fa-eye"></i>
                         </a>
                         @if (auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.nilai.show_by_siswa', $s->nis) }}" class="btn btn-info btn-sm">
+                            Lihat Nilai
+                        </a>
 
                             <a href="{{ route('admin.siswa.generateQR', $s->nis) }}" class="btn btn-sm btn-primary">
                                 Generate QR

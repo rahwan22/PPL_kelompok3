@@ -25,12 +25,14 @@
                 @endforeach
             </select>
         </div>
+        
+        <!-- ✅ PERBAIKAN: Menggunakan $k->id_kelas untuk value -->
         <div class="mb-3">
             <label>Kelas</label>
             <select name="id_kelas" class="form-control" required>
                 <option value="">-- Pilih Kelas --</option>
                 @foreach($kelas as $k)
-                    <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+                    <option value="{{ $k->id_kelas }}">{{ $k->nama_kelas }}</option>
                 @endforeach
             </select>
         </div>

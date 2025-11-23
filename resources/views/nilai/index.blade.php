@@ -27,12 +27,9 @@
                         <th scope="col" class="text-center">#</th>
                         <th scope="col">Siswa (NIS)</th>
                         <th scope="col">Mata Pelajaran</th>
-                        <th scope="col">Kelas ID</th>
-                        <th scope="col" class="text-center">Tugas</th>
-                        <th scope="col" class="text-center">UTS</th>
-                        <th scope="col" class="text-center">UAS</th>
+                        <th scope="col">Kelas</th> 
                         <th scope="col" class="text-center bg-info text-white">Nilai Akhir</th>
-                        <th scope="col" class="text-center">Semester</th>
+                        <th scope="col" class="text-center">Catatan</th>
                         <th scope="col" class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -44,22 +41,24 @@
                                 <strong>{{ $n->siswa->nama ?? 'N/A' }}</strong> <br>
                                 <small class="text-muted">{{ $n->siswa->nis ?? '-' }}</small>
                             </td>
-                            <td>{{ $n->mapel->nama_mapel ?? 'N/A' }}</td>
+                            <td>{{ $n->mapel->nama_mapel ?? $n->id_mapel ?? 'N/A' }}</td>
                             <td>{{ $n->kelas->nama_kelas ?? $n->id_kelas ?? 'N/A' }}</td>
-                            <td class="text-center">{{ $n->nilai_tugas }}</td>
-                            <td class="text-center">{{ $n->nilai_uts }}</td>
-                            <td class="text-center">{{ $n->nilai_uas }}</td>
                             <td class="text-center fw-bold bg-info-subtle">{{ number_format($n->nilai_akhir, 2) }}</td>
-                            <td class="text-center">{{ $n->semester }}</td>
+
+                            <td class="text-center">{{ $n->catatan }}</td>
                             
                             <td class="text-center">
                                 <div class="d-flex justify-content-center">
-                                    <!-- Tombol Edit -->
-                                    <a href="{{ route('nilai.edit', $n->id) }}" class="btn btn-sm btn-warning me-2" title="Edit Data">
+                                    <a href="{{ route('nilai.edit', $n->id_nilai) }}" class="btn btn-sm btn-warning me-2" title="Edit Data">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <!-- Tombol Hapus -->
-                                    <form action="{{ route('nilai.destroy', $n->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data nilai ini?');">
+                                    <!-- Tombol Edit: ✅ PERBAIKAN: Menggunakan $n->id_nilai -->
+
+                                    <a href="{{ route('nilai.show', $n->id_nilai) }}" class="btn btn-info btn-sm me-2" title="show Data">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <!-- Tombol Hapus: ✅ PERBAIKAN: Menggunakan $n->id_nilai -->
+                                    <form action="{{ route('nilai.destroy', $n->id_nilai) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data nilai ini?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger" title="Hapus Data">
@@ -71,7 +70,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center py-4 text-muted">
+                            <td colspan="11" class="text-center py-4 text-muted">
                                 <i class="bi bi-info-circle me-1"></i> Belum ada data nilai yang tercatat.
                             </td>
                         </tr>

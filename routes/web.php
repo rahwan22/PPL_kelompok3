@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::resource('kelas', KelasController::class);
 Route::resource('siswa', SiswaController::class);
+Route::get('admin/siswa/{nis}/nilai', [NilaiController::class, 'nilaiSiswaByAdmin'])->name('admin.nilai.show_by_siswa');
 
 
 //end
@@ -102,19 +103,12 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->group(function () {
 Route::middleware(['auth', 'role:guru'])->group(function () {
     
     Route::get('dashboard/guru', [DashboardController::class, 'guru'])->name('dashboard.guru');
-
-   
-
     Route::resource('absensi', AbsensiController::class);
 
-    // --- Rute Absensi QR (PENTING) ---
     Route::get('/scan', [AbsensiController::class, 'scanForm'])->name('absensi.scan');
     
     Route::get('semua/kelas', [KelasController::class, 'index'])->name('lihat.kelas');
     Route::get('semua/mapel', [MataPelajaranController::class, 'index'])->name('lihat.mapel');
-
-
-    
 
     // --- Rute Nilai --
     Route::resource('nilai', NilaiController::class);

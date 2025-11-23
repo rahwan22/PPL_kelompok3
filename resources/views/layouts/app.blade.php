@@ -281,8 +281,6 @@
                                     class="bi bi-person-badge"></i> Laporan Guru</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.siswa') }}"><i
                                     class="bi bi-people"></i> Laporan Siswa</a></li>
-                        <!-- <li class="nav-item"><a class="nav-link" href="{{ route('laporan.nilai') }}"><i
-                                    class="bi bi-bar-chart-line"></i> Laporan Nilai</a></li> -->
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.mapel') }}"><i
                                     class="bi bi-journal-bookmark"></i> Semua Mapel</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.absensi') }}"><i
