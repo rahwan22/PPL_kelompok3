@@ -37,7 +37,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ubah-sandi', [DashboardController::class, 'updatePassword'])->name('password.update');
 });
 
+//route yang bisa di akses lebih dari satu user
 
+Route::resource('kelas', KelasController::class);
+Route::resource('siswa', SiswaController::class);
+
+
+//end
 
 // ===================== 3. ADMIN ACCESS (ROLE: ADMIN) =====================
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -46,10 +52,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Resource CRUD untuk admin (termasuk AbsensiController@index dan @store manual)
     Route::resources([
-        'siswa' => SiswaController::class,
+        // 'siswa' => SiswaController::class,
         'guru' => GuruController::class,
         'mapel' => MataPelajaranController::class,
-        'kelas' => KelasController::class,
+        // 'kelas' => KelasController::class,
         // 'nilai' => NilaiController::class,
         // 'absensi' => AbsensiController::class,
         
@@ -67,25 +73,28 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->group(function () {
     Route::get('dashboard/kepsek', [DashboardController::class, 'kepsek'])->name('dashboard.kepsek');
 
     // Laporan untuk kepala sekolah (menggunakan Controller index untuk menampilkan daftar)
-    // Route::get('laporan/guru', [GuruController::class, 'index'])->name('laporan.guru');
+    Route::get('laporan/guru', [GuruController::class, 'index'])->name('laporan.guru');
     Route::get('laporan/siswa', [SiswaController::class, 'index'])->name('laporan.siswa');
     Route::get('laporan/nilai', [NilaiController::class, 'index'])->name('laporan.nilai');
     Route::get('laporan/absensi', [AbsensiController::class, 'index'])->name('laporan.absensi');
     Route::get('laporan/mapel', [MataPelajaranController::class, 'index'])->name('laporan.mapel');
     Route::get('laporan/kelas', [KelasController::class, 'index'])->name('laporan.kelas');
+    
+    // Route::resource('kelas', KelasController::class);
+    
 
 
     // Route::get('laporan/gurulaporan', [GuruController::class, 'laporanguru'])->name('laporanguru.guru');
 
     // Laporan Guru — memakai VIEW statis buatanmu
-    Route::get('laporan/guru', function () {
-        return view('guru.laporanGuru');
-    })->name('laporan.guru');
+    // Route::get('laporan/guru', function () {
+    //     return view('guru.laporanGuru');
+    // })->name('laporan.guru');
 
-    // Halaman daftar siswa per kelas (VIEW kedua)
-    Route::get('/guru/laporanKelas1', function () {
-    return view('guru.laporanGuruKelas1');
-    })->name('laporan.guru.kelas1');
+    // // Halaman daftar siswa per kelas (VIEW kedua)
+    // Route::get('/guru/laporanKelas1', function () {
+    // return view('guru.laporanGuruKelas1');
+    // })->name('laporan.guru.kelas1');
 });
 
 

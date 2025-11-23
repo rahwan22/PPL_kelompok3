@@ -22,10 +22,8 @@
                     <th>NIS</th>
                     <th>Nama Siswa</th>
                     <th>Kelas</th>
+                    <th scope="col" class="py-3 text-center">Aksi</th>
                     
-                    @if (auth()->user()->role === 'admin')
-                        <th scope="col" class="py-3 text-center">Aksi</th>
-                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -37,21 +35,25 @@
                     <td>{{ $s->nama }}</td>
                     <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
                     
-                    @if (auth()->user()->role === 'admin')
+                    
                     <td class="text-center">
-                        <a href="{{ route('admin.siswa.generateQR', $s->nis) }}" class="btn btn-sm btn-primary">
-                            Generate QR
+                        <div>
+                            {{-- Tombol Detail --}}
+                        <a href="{{ route('siswa.show', $s->nis) }}" class="btn btn-info btn-sm me-2" title="Detail siswa">
+                            <i class="fas fa-eye"></i>
                         </a>
+                        @if (auth()->user()->role === 'admin')
+
+                            <a href="{{ route('admin.siswa.generateQR', $s->nis) }}" class="btn btn-sm btn-primary">
+                                Generate QR
+                            </a>
 
                         @if($s->qr_code)
                             <a href="{{ route('admin.siswa.downloadQR', $s->nis) }}" class="btn btn-sm btn-success">
                                 Download QR
                             </a>
                         @endif
-                        {{-- Tombol Detail --}}
-                        <a href="{{ route('siswa.show', $s->nis) }}" class="btn btn-info btn-sm me-2" title="Detail siswa">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                        
                         
                         {{-- Tombol Edit --}}
                         <a href="{{ route('siswa.edit', $s->nis) }}" class="btn btn-warning btn-sm me-2" title="Edit Data">
@@ -64,8 +66,10 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                         </form>
+                        @endif
+                        </div>
                     </td>
-                    @endif
+                    
                 </tr>
                 @endforeach
             </tbody>

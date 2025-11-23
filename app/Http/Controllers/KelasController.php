@@ -9,10 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 class KelasController extends Controller
 {
-    // ASUMSI: Middleware 'admin' sudah didaftarkan di Kernel.php
-    // Jika tidak, Anda dapat menggunakan pengecekan manual Auth::user()->role === 'admin'
-    // di dalam setiap method modifikasi.
 
+    
     /**
      * Menampilkan daftar semua Kelas.
      * Dapat diakses oleh semua role (admin, kepala_sekolah, guru).
@@ -112,6 +110,14 @@ class KelasController extends Controller
 
     public function show($id_kelas)
     {
+
+        $userRole = auth()->user()->role;
+        
+        // Pastikan hanya admin DAN kepala_sekolah yang bisa mengakses show
+        if ($userRole !== 'admin' && $userRole !== 'kepala_sekolah' && $userRole !== 'guru') {
+            // Jika role tidak diizinkan, kembalikan response error 403 (Forbidden)
+            abort(403, 'Akses Ditolak. Anda tidak memiliki izin untuk melihat detail kelas.');
+        }
         $kelas = Kelas::with(['waliKelas', 'siswa'])
                     ->findOrFail($id_kelas); 
         // Note: Pastikan relasi 'siswa' ada di model Kelas

@@ -35,10 +35,7 @@
                             <th scope="col" class="py-3">Wali Kelas</th>
                             {{-- KOLOM BARU --}}
                             <th scope="col" class="py-3 text-center">Jumlah Siswa</th> 
-                            {{-- Tampilkan header Aksi hanya jika role ADALAH admin --}}
-                            @if (auth()->user()->role === 'admin')
-                                <th scope="col" class="py-3 text-center">Aksi</th>
-                            @endif
+                           <th scope="col" class="py-3 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,12 +67,13 @@
                                 </td>
                                 
                                 {{-- Kolom Aksi (Hanya untuk Admin) --}}
-                                @if (auth()->user()->role === 'admin' )
+                                
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group" onclick="event.stopPropagation()">
-                                            <a href="{{ route('kelas.show', $k->id_kelas) }}"  class="btn btn-info btn-sm me-2" title="Detail siswa">
+                                            <a href="{{ route('kelas.show', $k->id_kelas) }}"  class="btn btn-info btn-sm me-2" title="Detail kelas">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                             @if (auth()->user()->role === 'admin' )
                                             {{-- Tombol Edit --}}
                                             <a href="{{ route('kelas.edit', $k->id_kelas) }}" class="btn btn-primary btn-sm me-2" title="Edit Data" onclick="event.stopPropagation()">
                                                 <i class="fas fa-edit"></i>
@@ -89,14 +87,15 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
-                                @endif
+                             
                             </tr>
                         @empty
                             <tr>
                                 {{-- Penyesuaian colspan agar tabel tidak pecah --}}
-                                @php $colspan = (auth()->user()->role === 'admin') ? 6 : 5; @endphp
+                                
                                 <td colspan="{{ $colspan }}" class="text-center py-4 text-muted">
                                     <i class="fas fa-box-open me-2"></i> Belum ada data kelas yang tercatat.
                                 </td>

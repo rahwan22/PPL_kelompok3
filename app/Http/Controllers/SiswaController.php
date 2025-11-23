@@ -83,7 +83,15 @@ class SiswaController extends Controller
      * Display the specified resource (Halaman Detail).
      */
     public function show($nis)
+    
     {
+        $userRole = auth()->user()->role;
+        
+        // Pastikan hanya admin DAN kepala_sekolah yang bisa mengakses show
+        if ($userRole !== 'admin' && $userRole !== 'kepala_sekolah' && $userRole !== 'guru') {
+            // Jika role tidak diizinkan, kembalikan response error 403 (Forbidden)
+            abort(403, 'Akses Ditolak. Anda tidak memiliki izin untuk melihat detail kelas.');
+        }
         // Pastikan relasi di-load untuk halaman detail
         $siswa = Siswa::where('nis', $nis)->with(['kelas', 'orangtua'])->firstOrFail();
         return view('siswa.detail', compact('siswa'));

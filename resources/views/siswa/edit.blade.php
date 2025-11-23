@@ -128,61 +128,7 @@
             </div>
         </div>
 
-        {{-- BAGIAN DATA ORANG TUA --}}
-     <!-- <h3 class="text-2xl font-semibold text-indigo-700 mt-8 mb-4 border-b pb-2">Pengaturan Orang Tua</h3> -->
-        
-        <!-- <div class="p-4 mb-6 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
-            <p class="text-sm font-medium">Anda dapat: **Membuat Orang Tua Baru** (memutus hubungan yang lama), atau **Menghubungkan ke Orang Tua Lain** (di *dropdown*), atau **Membiarkan Hubungan Lama** (kosongkan semua opsi di bawah).</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="parent-options">
-            
-            {{-- OPTION 1: Membuat Orang Tua Baru --}}
-            {{-- Nama Orang Tua BARU (FIXED: Ganti nama input) --}}
-            <div>
-                <label for="orangtua" class="block text-sm font-medium text-gray-700 mb-1">Nama Orang Tua Baru (Opsional)</label>
-                <input type="text" name="orangtua" id="orangtua" value="{{ old('orangtua') }}" placeholder="Kosongkan jika memilih Orang Tua yang sudah ada"
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 @error('orangtua') border-red-500 @enderror">
-                @error('orangtua')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-            
-            {{-- Nomor WA Orang Tua BARU (FIXED: Ganti nama input & label/error ref) --}}
-            <div>
-                <label for="no_wa" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Baru (Contoh: 62812xxxx)</label>
-                <input type="text" name="no_wa" id="no_wa" value="{{ old('no_wa') }}" placeholder="Tanpa '+', Wajib diisi jika Nama Orang Tua di atas diisi."
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 @error('no_wa') border-red-500 @enderror">
-                @error('no_wa')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div> -->
-       
-            {{-- OPTION 2: Pilih Orang Tua Yang Sudah Ada --}}
-            <!-- <div class="p-4 border border-indigo-300 rounded-lg bg-indigo-100/50">
-                <h4 class="text-lg font-bold text-indigo-700 mb-3">2. Hubungkan ke Orang Tua Lain</h4>
-                <label for="id_orangtua" class="block text-sm font-medium text-gray-700 mb-1">Pilih Orang Tua:</label>
-                <select name="id_orangtua" id="id_orangtua" 
-                    class="parent-existing mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_orangtua') border-red-500 @enderror">
-                    
-                    {{-- Opsi Awal: Kosong (Pertahankan hubungan lama) atau Putus Hubungan --}}
-                    <option value="">-- Pertahankan/Putus Hubungan Lama (Kosongkan) --</option> 
-                    
-                    {{-- Default value disetel ke id_orangtua saat ini jika belum ada error validasi --}}
-                    @foreach($orangtua as $o)
-                    <option value="{{ $o->id_orangtua }}" 
-                        {{ old('id_orangtua', $siswa->id_orangtua) == $o->id_orangtua ? 'selected' : '' }}>
-                        {{ $o->nama }} (WA: {{ $o->no_wa ?? '-' }})
-                    </option>
-                    @endforeach
-                </select>
-                <p class="mt-1 text-xs text-indigo-600">Jika Anda memilih opsi ini, hubungan lama (jika ada) akan diganti.</p>
-                @error('id_orangtua')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div> -->
-
-        
+           
 
 
         <div class="mt-8 pt-4 border-t flex justify-end">
