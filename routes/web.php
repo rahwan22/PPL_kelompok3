@@ -10,6 +10,7 @@ use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\AlokasiMengajarController;
 
 
 
@@ -41,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::resource('kelas', KelasController::class);
 Route::resource('siswa', SiswaController::class);
+Route::resource('guru', GuruController::class);
 Route::get('admin/siswa/{nis}/nilai', [NilaiController::class, 'nilaiSiswaByAdmin'])->name('admin.nilai.show_by_siswa');
 
 
@@ -54,13 +56,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Resource CRUD untuk admin (termasuk AbsensiController@index dan @store manual)
     Route::resources([
         // 'siswa' => SiswaController::class,
-        'guru' => GuruController::class,
+        // 'guru' => GuruController::class,
         'mapel' => MataPelajaranController::class,
         // 'kelas' => KelasController::class,
         // 'nilai' => NilaiController::class,
         // 'absensi' => AbsensiController::class,
         
     ]);
+    // 🆕 RUTE BARU: PENGELOLAAN ALOKASI MENGAJAR (CRUD)
+    Route::get('/alokasi/available-kelas', [AlokasiMengajarController::class, 'getAvailableKelas']);
+    Route::prefix('alokasi')->group(function () {
+        Route::get('/', [AlokasiMengajarController::class, 'index'])->name('alokasi.index');
+        Route::get('/create', [AlokasiMengajarController::class, 'create'])->name('alokasi.create');
+        Route::post('/', [AlokasiMengajarController::class, 'store'])->name('alokasi.store');
+        // Asumsi hanya perlu delete untuk tabel pivot
+        Route::delete('/{alokasi}', [AlokasiMengajarController::class, 'destroy'])->name('alokasi.destroy');
+    });
+
+ 
     
     // Rute khusus QR untuk Admin (mencetak QR Siswa)
     Route::get('/admin/siswa/{nis}/generate-qr', [SiswaController::class, 'generateQR'])->name('admin.siswa.generateQR');
@@ -81,21 +94,7 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->group(function () {
     Route::get('laporan/mapel', [MataPelajaranController::class, 'index'])->name('laporan.mapel');
     Route::get('laporan/kelas', [KelasController::class, 'index'])->name('laporan.kelas');
     
-    // Route::resource('kelas', KelasController::class);
     
-
-
-    // Route::get('laporan/gurulaporan', [GuruController::class, 'laporanguru'])->name('laporanguru.guru');
-
-    // Laporan Guru — memakai VIEW statis buatanmu
-    // Route::get('laporan/guru', function () {
-    //     return view('guru.laporanGuru');
-    // })->name('laporan.guru');
-
-    // // Halaman daftar siswa per kelas (VIEW kedua)
-    // Route::get('/guru/laporanKelas1', function () {
-    // return view('guru.laporanGuruKelas1');
-    // })->name('laporan.guru.kelas1');
 });
 
 
@@ -105,6 +104,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('dashboard/guru', [DashboardController::class, 'guru'])->name('dashboard.guru');
     Route::resource('absensi', AbsensiController::class);
 
+    Route::get('/jadwal-mengajar', [AlokasiMengajarController::class, 'jadwalGuru'])->name('alokasi.jadwal');
     Route::get('/scan', [AbsensiController::class, 'scanForm'])->name('absensi.scan');
     
     Route::get('semua/kelas', [KelasController::class, 'index'])->name('lihat.kelas');
@@ -118,8 +118,4 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     
 });
 
-
-Route::get('/yang_utama', function () {
-    return view('layout.app');
-    });
 

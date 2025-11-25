@@ -21,46 +21,52 @@
         </div>
     @endif
 
-    <!-- Form harus memiliki atribut enctype="multipart/form-data" untuk upload file -->
     <form action="{{ route('guru.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
+        
+        {{-- FIELD TERSEMBUNYI UNTUK PASSWORD DEFAULT --}}
+        {{-- Catatan: Nilai ini HARUS di-hash di Controller sebelum disimpan ke DB. --}}
+        <input type="hidden" name="password" value="password123"> 
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            <!-- Nama -->
+            {{-- Nama Lengkap --}}
             <div>
                 <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
                 <input type="text" name="nama" id="nama" value="{{ old('nama') }}" required
-                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nama') border-red-500 @enderror">
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nama') border-red-500 @enderror">
                 @error('nama')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
             </div>
             
-            <!-- NIP -->
+            {{-- NIP --}}
             <div>
                 <label for="nip" class="block text-sm font-medium text-gray-700 mb-1">NIP (Opsional)</label>
                 <input type="text" name="nip" id="nip" value="{{ old('nip') }}"
-                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nip') border-red-500 @enderror">
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nip') border-red-500 @enderror">
                 @error('nip')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Email -->
+            {{-- Email --}}
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email (Digunakan untuk Login)</label>
                 <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror">
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror">
                 @error('email')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
+                {{-- KETERANGAN PENTING: Password Default --}}
+                <p class="text-xs mt-1 text-indigo-500">Password default: **password123** (Harus diubah setelah login pertama)</p>
             </div>
 
-            <!-- Jenis Kelamin -->
+            {{-- Jenis Kelamin --}}
             <div>
                 <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
                 <select name="jenis_kelamin" id="jenis_kelamin" required
-                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('jenis_kelamin') border-red-500 @enderror">
+                                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('jenis_kelamin') border-red-500 @enderror">
                     <option value="" disabled selected>Pilih Jenis Kelamin</option>
                     <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                     <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -69,48 +75,75 @@
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
             </div>
+            <div>
+
+    <label for="id_mapel" class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran (Wajib)</label>
+    <select name="id_mapel" id="id_mapel" required
+        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_mapel') border-red-500 @enderror">
+        <option value="" disabled selected>Pilih Mata Pelajaran</option>
+        @foreach ($mapel as $m)
+            <option value="{{ $m->id_mapel }}" {{ old('id_mapel') == $m->id_mapel ? 'selected' : '' }}>
+                {{ $m->nama_mapel }}
+            </option>
+        @endforeach
+    </select>
+    @error('id_mapel')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
+</div>
+
+<div>
+    <label for="id_kelas_wali" class="block text-sm font-medium text-gray-700 mb-1">Wali Kelas (Opsional)</label>
+    <select name="id_kelas_wali" id="id_kelas_wali"
+        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_kelas_wali') border-red-500 @enderror">
+        <option value="" selected>--- Tidak Menjadi Wali Kelas ---</option>
+        @foreach ($kelas as $k)
+            <option value="{{ $k->id_kelas }}" {{ old('id_kelas_wali') == $k->id_kelas ? 'selected' : '' }}>
+                {{ $k->nama_kelas }}
+            </option>
+        @endforeach
+    </select>
+    @error('id_kelas_wali')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
+</div>
             
-            <!-- No HP -->
+            
+            {{-- Nomor HP --}}
             <div>
                 <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1">Nomor HP</label>
                 <input type="text" name="no_hp" id="no_hp" value="{{ old('no_hp') }}" required
-                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('no_hp') border-red-500 @enderror">
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('no_hp') border-red-500 @enderror">
                 @error('no_hp')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Mata Pelajaran -->
-            <div>
-                <label for="mapel" class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran yang Diampu (Opsional)</label>
-                <input type="text" name="mapel" id="mapel" value="{{ old('mapel') }}"
-                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('mapel') border-red-500 @enderror">
-                @error('mapel')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+          
+            {{-- Mengisi kolom kosong di grid --}}
+            <div>&nbsp;</div> 
 
-            <!-- Alamat -->
+            {{-- Alamat Lengkap --}}
             <div class="md:col-span-2">
                 <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
                 <textarea name="alamat" id="alamat" rows="2" required
-                          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('alamat') border-red-500 @enderror">{{ old('alamat') }}</textarea>
+                                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('alamat') border-red-500 @enderror">{{ old('alamat') }}</textarea>
                 @error('alamat')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Foto -->
+            {{-- Foto Profil --}}
             <div class="md:col-span-2">
-                <label for="foto" class="block text-sm font-medium text-gray-700 mb-1">Foto Profil (Maks 2MB)</label>
+                <label for="foto" class="block text-sm font-medium text-gray-700 mb-1">Foto Profil (Maks 2MB, Opsional)</label>
                 
                 <input type="file" name="foto" id="foto" 
-                       class="mt-1 block w-full text-sm text-gray-500
-                              file:mr-4 file:py-2 file:px-4
-                              file:rounded-full file:border-0
-                              file:text-sm file:font-semibold
-                              file:bg-indigo-50 file:text-indigo-700
-                              hover:file:bg-indigo-100 @error('foto') border-red-500 @enderror">
+                        class="mt-1 block w-full text-sm text-gray-500
+                                 file:mr-4 file:py-2 file:px-4
+                                 file:rounded-full file:border-0
+                                 file:text-sm file:font-semibold
+                                 file:bg-indigo-50 file:text-indigo-700
+                                 hover:file:bg-indigo-100 @error('foto') border-red-500 @enderror">
                 @error('foto')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror

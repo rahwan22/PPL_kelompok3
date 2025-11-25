@@ -9,8 +9,10 @@ class Kelas extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_kelas';
-    protected $fillable = ['nama_kelas', 'tahun_ajaran', 'id_wali_kelas'];
+    protected $table = 'kelas'; 
+    protected $primaryKey = 'id_kelas'; 
+    protected $guarded = ['id_kelas'];
+    protected $fillable = ['nama_kelas', 'tahun_ajaran'];
 
     
 
@@ -20,7 +22,7 @@ class Kelas extends Model
     // }
     public function waliKelas()
     {
-        return $this->belongsTo(Guru::class, 'id_wali_kelas', 'id_guru');
+        return $this->hasOne(Guru::class, 'id_kelas_wali', 'id_kelas');
     }
 
 

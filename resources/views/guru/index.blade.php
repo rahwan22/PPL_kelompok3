@@ -20,29 +20,30 @@
                 <th>No</th>
                 <th>Nama</th>
                 <th>NIP</th>
-                <th>Mapel</th>
                 
                 
-                 @if (auth()->user()->role === 'admin')
+                
+       
                 <th><center>Aksi</center></th>
-                 @endif
+                 
             </tr>
         </thead>
         <tbody>
-            @foreach($data as $g)
+            @foreach($gurus as $g)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $g->nama }}</td>
                 <td>{{ $g->nip }}</td>
-                <td>{{ $g->mapel }}</td>
+               
                 
 
-                 @if (auth()->user()->role === 'admin')
+                
                 <td class="text-center">
-                    <a href="{{ route('guru.show', $g->id_guru) }}"  class="btn btn-info btn-sm me-2" title="Detail siswa">
+                    <a href="{{ route('guru.show', $g->id_guru) }}"  class="btn btn-info btn-sm me-2" title="Detail guru">
                             <i class="fas fa-eye"></i>
                         </a>
-                    <a href="{{ route('guru.edit', $g->id_guru) }}" class="btn btn-primary btn-sm me-2" title="Edit Data">
+                         @if (auth()->user()->role === 'admin')
+                    <a href="{{ route('guru.edit', $g->id_guru) }}" class="btn btn-primary btn-sm me-2" title="Edit guru">
                             <i class="fas fa-edit"></i>
                         </a>
 
@@ -55,13 +56,14 @@
                         Hapus
                     </button>
                 </form>
+                 @endif
 
                 </td>
-                 @endif
+                
             </tr>
             @endforeach
         </tbody>
     </table>
-    {{ $data->links() }}
+   
 </div>
 @endsection

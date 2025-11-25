@@ -8,26 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 class MataPelajaran extends Model
 {
     use HasFactory;
-    
 
-    protected $table = 'mata_pelajaran';
+    // Definisikan primary key dan nama tabel
     protected $primaryKey = 'id_mapel';
-
+    protected $table = 'mata_pelajaran';
+    
+    // Tentukan kolom yang dapat diisi secara massal (fillable)
     protected $fillable = [
         'nama_mapel',
         'kode_mapel',
-        'id_guru',
+        'tingkat',
     ];
 
-    // 🔗 Relasi ke model Guru
-    public function guru()
+    /**
+     * Relasi ke Guru (melalui tabel pivot guru_mapel_kelas)
+     * Ini menunjukkan guru mana saja yang mengajar mata pelajaran ini.
+     */
+    public function guruMengajar()
     {
-        return $this->belongsTo(Guru::class, 'id_guru', 'id_guru');
-    }
-
-    // 🔗 Relasi ke model Nilai
-    public function nilai()
-    {
-        return $this->hasMany(Nilai::class, 'id_mapel', 'id_mapel');
+        return $this->belongsToMany(
+            Guru::class, 
+            'guru_mapel_kelas', 
+            'id_mapel', // Foreign key di tabel pivot yang merujuk ke MataPelajaran
+            'id_guru'   // Foreign key di tabel pivot yang merujuk ke Guru
+        )->withPivot('id_kelas'); // Sertakan id_kelas jika perlu tahu di kelas mana dia mengajar
     }
 }

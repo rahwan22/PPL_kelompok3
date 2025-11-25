@@ -7,6 +7,9 @@
         <a href="{{ route('kelas.index') }}" class="btn btn-secondary rounded-pill shadow-sm">
             <i class="fas fa-arrow-left me-1"></i> Kembali ke Data Kelas
         </a>
+        <a href="{{ route('mapel.index') }}" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-50 transition duration-150">
+            Kembali ke Daftar
+        </a>
         
         {{-- Header Detail --}}
         <h2 class="h3 font-weight-bold text-primary text-center m-0">
@@ -73,13 +76,16 @@
                         </li>
                     @endforeach
                 </ul>
+                
             @else
                 <div class="alert alert-warning m-3 text-center">
                     <i class="fas fa-exclamation-triangle me-1"></i> Kelas ini belum memiliki siswa yang terdaftar.
                 </div>
             @endif
         </div>
+        
     </div>
+    
 </div>
 
 <style>

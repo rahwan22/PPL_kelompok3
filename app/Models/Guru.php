@@ -9,11 +9,25 @@ class Guru extends Model
 {
     use HasFactory;
 
-    protected $table = 'guru';
-
+    // Pastikan nama tabel, Primary Key, dan tipe key sudah sesuai dengan skema DB Anda
+    protected $table = 'guru'; 
     protected $primaryKey = 'id_guru';
-    protected $fillable = ['nip', 'nama', 'jenis_kelamin', 'alamat', 'no_hp', 'email', 'mapel', 'foto'];
+    // Asumsi Primary Key bertipe integer/bigint
+    public $incrementing = true;
+    protected $keyType = 'int'; 
 
+    protected $fillable = [
+        'id_user', 
+        'id_mapel', 
+        'id_kelas_wali', 
+        'nama', 
+        'nip', 
+        'email',
+        'jenis_kelamin', 
+        'alamat', 
+        'no_hp', 
+        'foto'
+    ];
 
     // 🔹 Relasi: 1 Guru → Banyak Absensi
     public function absensi()
@@ -32,15 +46,19 @@ class Guru extends Model
     }
     public function kelas()
     {
-        return $this->hasMany(Kelas::class, 'id_wali_kelas', 'id_guru');
+        return $this->hasMany(Kelas::class, 'id_kelas_wali', 'id_guru');
     }
 
     public function kelasWali()
-{
-    // Asumsi: Kelas memiliki kolom foreign key 'id_guru'
-    return $this->hasOne(Kelas::class, 'id_guru', 'id_guru');
-}
+    {
+        // Asumsi: Kelas memiliki kolom foreign key 'id_guru'
+        return $this->belongsTo(Kelas::class, 'id_kelas_wali', 'id_kelas');
+    }
+
+    public function user()
+    {
+        // Parameter: Model, foreign key di tabel ini, local key di tabel tujuan (User)
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
 
 }
-
-

@@ -11,9 +11,11 @@
             Detail Siswa: {{ $siswa->nama }}
         </h1>
         <div class="flex space-x-3">
-            <a href="{{ route('siswa.edit', $siswa->nis) }}" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 transition duration-150">
-                <i class="fas fa-edit mr-1"></i> Edit Data
-            </a>
+            @if (auth()->user()->role === 'admin')
+                <a href="{{ route('siswa.edit', $siswa->nis) }}" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 transition duration-150">
+                    <i class="fas fa-edit mr-1"></i> Edit Data
+                </a>
+            @endif
             <a href="{{ route('siswa.index') }}" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-100 transition duration-150">
                 <i class="fas fa-arrow-left mr-1"></i> Kembali
             </a>

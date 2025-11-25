@@ -65,7 +65,7 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $nilai->semester }}</td>
                                     <td><strong>{{ $nilai->mapel->nama_mapel }}</strong></td>
-                                    <td>{{ $nilai->kelas->nama_kelas }}</td>
+                                    <td><strong>{{ $nilai->kelas?->nama_kelas ?? '—' }}</strong></td>
                                     <td class="text-center">{{ $nilai->nilai_tugas }}</td>
                                     <td class="text-center">{{ $nilai->nilai_uts }}</td>
                                     <td class="text-center">{{ $nilai->nilai_uas }}</td>
@@ -73,7 +73,7 @@
                                     
                                     {{-- Kolom Predikat --}}
                                     <td class="text-center">
-                                        <span class="badge badge-{{ $badge_class }}">{{ $predikat }}</span>
+                                        <span class="badge text-bg-dark">{{ $predikat }}</span>
                                     </td>
                                     
                                     <td>{{ $nilai->catatan ?? '-' }}</td>

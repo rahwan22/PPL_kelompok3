@@ -2,68 +2,110 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class MataPelajaranController extends Controller
 {
-    // 🔹 Menampilkan semua data mapel
+    /**
+     * Menampilkan daftar semua Mata Pelajaran (Index).
+     */
     public function index()
     {
-        $mapel = MataPelajaran::all();
-        return view('mapel.index', compact('mapel'));
-    }
+        // Ambil semua data mata pelajaran dan urutkan berdasarkan kode
+        $mapels = MataPelajaran::orderBy('kode_mapel')->get();
 
-    // 🔹 Form tambah dataya
-    
+        return view('mapel.index', compact('mapels'));
+    }
+//     public function index()
+// {
+//     // Mengambil semua data mata pelajaran
+//     $allMapels = MataPelajaran::all();
+
+//     // Mengelompokkan data berdasarkan 'nama_mapel'
+//     // Setiap group akan berisi koleksi mapel yang memiliki nama yang sama
+//     $groupedMapels = $allMapels->groupBy('nama_mapel');
+
+//     // Mengirim data yang sudah dikelompokkan ke view
+//     return view('mapel.index', compact('groupedMapels'));
+// }
+
+    /**
+     * Menampilkan form untuk membuat Mata Pelajaran baru (Create).
+     * (Anda belum meminta ini, tapi ini adalah pasangan alami dari Store)
+     */
     public function create()
     {
-        return view('mapel.create');
+        // Data untuk dropdown tingkat (sesuai migrasi: 1 sampai 6)
+        $tingkat = range(1, 6);
+        return view('mapel.create', compact('tingkat'));
     }
 
-    // 🔹 Simpan data baru
+    /**
+     * Menyimpan data Mata Pelajaran baru ke database (Store).
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'kode_mapel' => 'required|string|max:10|unique:mata_pelajaran,kode_mapel',
             'nama_mapel' => 'required|string|max:100',
-            
+            'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel',
+            'tingkat' => ['nullable', Rule::in(range(1, 6))],
         ]);
 
         MataPelajaran::create($request->all());
 
-        return redirect()->route('mapel.index')->with('success', 'Data mata pelajaran berhasil ditambahkan!');
+        return redirect()->route('mapel.index')->with('success', 'Mata Pelajaran berhasil ditambahkan.');
     }
 
-    // 🔹 Form edit data
-    public function edit($id)
+    /**
+     * Menampilkan detail Mata Pelajaran tertentu (Show).
+     */
+    public function show(MataPelajaran $mapel)
     {
-        $mapel = MataPelajaran::findOrFail($id);
-        return view('mapel.edit', compact('mapel'));
+        // Untuk menampilkan detail pengajar, kita bisa memuat relasi pivot
+        $mapel->load(['guruMengajar.user', 'guruMengajar.kelasWali']);
+        
+        return view('mapel.show', compact('mapel'));
     }
 
-    // 🔹 Update data
-    public function update(Request $request, $id)
+    /**
+     * Menampilkan form untuk mengedit Mata Pelajaran (Edit).
+     */
+    public function edit(MataPelajaran $mapel)
     {
-        $mapel = MataPelajaran::findOrFail($id);
+        // Data untuk dropdown tingkat (sesuai migrasi: 1 sampai 6)
+        $tingkat = range(1, 6);
+        return view('mapel.edit', compact('mapel', 'tingkat'));
+    }
 
+    /**
+     * Memperbarui data Mata Pelajaran di database (Update).
+     */
+    public function update(Request $request, MataPelajaran $mapel)
+    {
         $request->validate([
-            'kode_mapel' => 'required|string|max:10|unique:mata_pelajaran,kode_mapel,' . $id . ',id_mapel',
             'nama_mapel' => 'required|string|max:100',
-            
+            // Pastikan kode_mapel unik kecuali untuk mapel yang sedang di-edit
+            'kode_mapel' => ['required', 'string', 'max:20', Rule::unique('mata_pelajaran', 'kode_mapel')->ignore($mapel->id_mapel, 'id_mapel')],
+            'tingkat' => ['nullable', Rule::in(range(1, 6))],
         ]);
 
         $mapel->update($request->all());
 
-        return redirect()->route('mapel.index')->with('success', 'Data mata pelajaran berhasil diperbarui!');
+        return redirect()->route('mapel.index')->with('success', 'Mata Pelajaran berhasil diperbarui.');
     }
 
-    // 🔹 Hapus data
-    public function destroy($id)
+    /**
+     * Menghapus Mata Pelajaran dari database (Destroy).
+     */
+    public function destroy(MataPelajaran $mapel)
     {
-        $mapel = MataPelajaran::findOrFail($id);
-        $mapel->delete();
-
-        return redirect()->route('mapel.index')->with('success', 'Data mata pelajaran berhasil dihapus!');
+        try {
+            $mapel->delete();
+            return redirect()->route('mapel.index')->with('success', 'Mata Pelajaran berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('mapel.index')->with('error', 'Gagal menghapus Mata Pelajaran. Ada data lain yang terkait.');
+        }
     }
 }

@@ -1,27 +1,25 @@
-
-
 @extends('layouts.app')
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4">Edit Kelas: <span class="text-primary">{{ $kela->nama_kelas }}</span></h3>
+    {{-- Menggunakan $kela (Route Model Binding) untuk menampilkan nama kelas --}}
+    <h3 class="mb-4">Edit Data Kelas: <span class="text-primary">{{ $kela->nama_kelas }}</span></h3>
 
-    <!-- Pembatasan Akses Form Hanya untuk Admin -->
     @if (auth()->user()->role === 'admin')
         <div class="card shadow-sm">
             <div class="card-header bg-warning text-dark">
                 <i class="bi bi-pencil-square me-2"></i> Perbarui Data Kelas
             </div>
             <div class="card-body">
-                <!-- Form akan memanggil route kelas.update (menggunakan metode PUT) -->
+                {{-- Form akan memanggil route kelas.update dengan method PUT/PATCH --}}
                 <form action="{{ route('kelas.update', $kela->id_kelas) }}" method="POST">
                     @csrf
-                    @method('PUT')
+                    @method('PUT') {{-- Wajib untuk operasi UPDATE --}}
 
-                    <!-- Input Nama Kelas -->
                     <div class="mb-3">
                         <label for="nama_kelas" class="form-label">Nama Kelas (Contoh: 4A)</label>
-                        <input type="text" name="nama_kelas" id="nama_kelas"
+                        <input type="text" name="nama_kelas" id="nama_kelas" 
+                               {{-- Menggunakan old() atau data saat ini dari $kela --}}
                                value="{{ old('nama_kelas', $kela->nama_kelas) }}"
                                class="form-control @error('nama_kelas') is-invalid @enderror" 
                                placeholder="Masukkan nama kelas" required>
@@ -30,10 +28,10 @@
                         @enderror
                     </div>
 
-                    <!-- Input Tahun Ajaran -->
                     <div class="mb-3">
                         <label for="tahun_ajaran" class="form-label">Tahun Ajaran (Contoh: 2024/2025)</label>
-                        <input type="text" name="tahun_ajaran" id="tahun_ajaran"
+                        <input type="text" name="tahun_ajaran" id="tahun_ajaran" 
+                               {{-- Menggunakan old() atau data saat ini dari $kela --}}
                                value="{{ old('tahun_ajaran', $kela->tahun_ajaran) }}"
                                class="form-control @error('tahun_ajaran') is-invalid @enderror" 
                                placeholder="Masukkan tahun ajaran" required>
@@ -42,42 +40,47 @@
                         @enderror
                     </div>
 
-                    <!-- Select Wali Kelas -->
                     <div class="mb-3">
-                        <label for="id_wali_kelas" class="form-label">Wali Kelas</label>
-                        <select name="id_wali_kelas" id="id_wali_kelas"
-                                class="form-select @error('id_wali_kelas') is-invalid @enderror">
-                            <option value="">-- Pilih Wali Kelas (Opsional) --</option>
-                            <!-- Loop data guru yang dikirim dari controller -->
-                            @foreach ($guru as $g)
-                                <option value="{{ $g->id_guru }}"
-                                    {{ old('id_wali_kelas', $kela->id_wali_kelas) == $g->id_guru ? 'selected' : '' }}>
-                                    {{ $g->nama }}
+                        <label for="id_kelas_wali" class="form-label">Wali Kelas (Opsional)</label>
+                        <select name="id_kelas_wali" id="id_kelas_wali"
+                                class="form-select @error('id_kelas_wali') is-invalid @enderror">
+                            
+                            {{-- Opsi Default: Memungkinkan untuk menghapus wali kelas --}}
+                            <option value="">-- Hapus Wali Kelas --</option>
+                            
+                            {{-- Loop data guru yang tersedia ($availableWalikelas) --}}
+                            @foreach ($availableWalikelas as $guru) 
+                                <option value="{{ $guru->id_guru }}"
+                                    {{-- Logic untuk membuat opsi 'selected':
+                                         1. Cek old('id_kelas_wali') jika ada error validasi.
+                                         2. Jika tidak ada error, cek apakah guru ini adalah wali kelas saat ini. --}}
+                                    {{ (old('id_kelas_wali') == $guru->id_guru) ? 'selected' : '' }}
+                                    {{ (old('id_kelas_wali') === null && $kela->waliKelas && $kela->waliKelas->id_guru == $guru->id_guru) ? 'selected' : '' }}
+                                >
+                                    {{ $guru->nama }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('id_wali_kelas')
+                        @error('id_kelas_wali')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <!-- Tombol Aksi -->
                     <div class="d-flex justify-content-end pt-3">
                         <a href="{{ route('kelas.index') }}" class="btn btn-secondary me-2">
                             <i class="bi bi-arrow-left"></i> Batal
                         </a>
                         <button type="submit" class="btn btn-warning text-dark">
-                            <i class="bi bi-save"></i> Perbarui Kelas
+                            <i class="bi bi-arrow-clockwise"></i> Perbarui Data
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     @else
-        <!-- Jika bukan admin -->
         <div class="alert alert-danger" role="alert">
             <h4 class="alert-heading">Akses Ditolak!</h4>
-            <p>Anda tidak memiliki izin untuk mengakses halaman pengeditan data kelas ini. Hanya Administrator yang diizinkan.</p>
+            <p>Anda tidak memiliki izin untuk mengakses halaman pengubahan data kelas ini. Hanya Administrator yang diizinkan.</p>
             <hr>
             <a href="{{ route('kelas.index') }}" class="btn btn-danger">Kembali ke Daftar Kelas</a>
         </div>

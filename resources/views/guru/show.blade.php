@@ -66,13 +66,10 @@
                     </span>
                 </div>
                 @endif
-                
-                <!-- Mata Pelajaran -->
-                <div class="flex items-center">
-                    <span class="font-medium w-36">Mata Pelajaran</span>
-                    <span class="ml-2">: {{ $guru->mapel ?? 'Belum Ditentukan' }}</span>
-                </div>
 
+                
+                
+               
                 <!-- No HP -->
                 <div class="flex items-center">
                     <span class="font-medium w-36">No. HP</span>
@@ -84,7 +81,6 @@
                     <p class="font-medium mb-1">Alamat Lengkap</p>
                     <p class="text-sm">{{ $guru->alamat }}</p>
                 </div>
-                
             </div>
         </div>
     </div>

@@ -12,6 +12,8 @@ class User extends Authenticatable
 
     protected $table = 'users';
     protected $primaryKey = 'id_user';
+    public $incrementing = true; 
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nip',
@@ -29,8 +31,19 @@ class User extends Authenticatable
 
     public function kelasWali()
     {
-        return $this->hasOne(\App\Models\Kelas::class, 'wali_kelas_id', 'id_duru');
+        return $this->hasOne(\App\Models\Kelas::class, 'id_kelas_wali', 'id_duru');
     }
+    public function guru()
+    {
+        // Asumsi: foreign key di tabel 'guru' adalah 'user_id'
+        return $this->hasOne(Guru::class, 'user_id', 'id');
+    }
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'status_aktif' => 'boolean', // Penting untuk tinyint(1)
+    ];
 
     public $timestamps = true;
 }
