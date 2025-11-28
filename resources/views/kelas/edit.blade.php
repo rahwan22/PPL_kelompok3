@@ -17,7 +17,7 @@
                     @method('PUT') {{-- Wajib untuk operasi UPDATE --}}
 
                     <div class="mb-3">
-                        <label for="nama_kelas" class="form-label">Nama Kelas (Contoh: 4A)</label>
+                        <label for="nama_kelas" class="form-label">Nama Kelas </label>
                         <input type="text" name="nama_kelas" id="nama_kelas" 
                                {{-- Menggunakan old() atau data saat ini dari $kela --}}
                                value="{{ old('nama_kelas', $kela->nama_kelas) }}"

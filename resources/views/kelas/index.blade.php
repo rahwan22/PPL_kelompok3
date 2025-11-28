@@ -106,26 +106,6 @@
     </div>
 </div>
 
-<script>
-    // Tambahkan fungsi untuk mencegah collapse saat tombol aksi (edit/hapus) diklik
-    // Di Laravel Blade, kita tambahkan event.stopPropagation() langsung pada onclick di tombol aksi.
-    
-    // Namun, jika Anda ingin efek visual yang lebih baik saat baris kelas diklik (misalnya, warna berubah), 
-    // Anda bisa menambahkan script JQuery atau JS murni di sini, meskipun tidak wajib.
-    // Contoh untuk menambahkan class aktif saat collapse terbuka (memerlukan JQuery):
-    /*
-    $(document).ready(function() {
-        $('.collapse').on('show.bs.collapse', function () {
-            // Temukan baris kelas yang terkait dan tambahkan kelas aktif
-            const classId = $(this).attr('id');
-            $([data-bs-target="#${classId}"]).addClass('table-info');
-        }).on('hide.bs.collapse', function () {
-            // Hapus kelas aktif saat collapse ditutup
-            const classId = $(this).attr('id');
-            $([data-bs-target="#${classId}"]).removeClass('table-info');
-        });
-    });
-    */
-</script>
+
 
 @endsection

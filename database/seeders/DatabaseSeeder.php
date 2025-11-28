@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         // Buat 6 user dengan role 'guru' yang akan dihubungkan ke tabel Guru
         User::factory(6)->guru()->create();
         // Buat 5 user umum (opsional)
-        User::factory(5)->create();
+        User::factory(1)->create();
         
         // 2. Data Independen lainnya
         Orangtua::factory(10)->create();
@@ -87,14 +87,14 @@ class DatabaseSeeder extends Seeder
         $siswa_nis = Siswa::pluck('nis');
         $kelas_ids = Kelas::pluck('id_kelas');
 
-        // 5. Data Transaksional
-        Nilai::factory(50)->make()->each(function ($nilai) use ($siswa_nis, $mapel_ids, $kelas_ids, $guru_ids) {
-            $nilai->nis = $siswa_nis->random();
-            $nilai->id_mapel = $mapel_ids->random();
-            $nilai->id_kelas = $kelas_ids->random();
-            $nilai->id_guru = $guru_ids->random();
-            $nilai->save();
-        });
+        // // 5. Data Transaksional
+        // Nilai::factory(50)->make()->each(function ($nilai) use ($siswa_nis, $mapel_ids, $kelas_ids, $guru_ids) {
+        //     $nilai->nis = $siswa_nis->random();
+        //     $nilai->id_mapel = $mapel_ids->random();
+        //     $nilai->id_kelas = $kelas_ids->random();
+        //     $nilai->id_guru = $guru_ids->random();
+        //     $nilai->save();
+        // });
         
         // Absensi::factory(100)->make()->each(function ($absensi) use ($siswa_nis, $kelas_ids, $guru_ids) {
         //     $absensi->nis = $siswa_nis->random();
@@ -103,25 +103,25 @@ class DatabaseSeeder extends Seeder
         //     $absensi->save();
         // });
         
-        Notifikasi::factory(20)->create(); 
+        // Notifikasi::factory(20)->create(); 
         
-        Pengumuman::factory(10)->make()->each(function ($pengumuman) use ($guru_ids) {
-            $pengumuman->id_guru = $guru_ids->random();
-            $pengumuman->save();
-        });
+        // Pengumuman::factory(10)->make()->each(function ($pengumuman) use ($guru_ids) {
+        //     $pengumuman->id_guru = $guru_ids->random();
+        //     $pengumuman->save();
+        // });
 
         // 6. Data Laporan
-        LaporanKelas::factory(6)->make()->each(function ($laporan) use ($kelas_ids, $guru_ids) {
-            $laporan->id_kelas = $kelas_ids->random();
-            $laporan->id_guru = $guru_ids->random();
-            $laporan->save();
-        });
+        // LaporanKelas::factory(6)->make()->each(function ($laporan) use ($kelas_ids, $guru_ids) {
+        //     $laporan->id_kelas = $kelas_ids->random();
+        //     $laporan->id_guru = $guru_ids->random();
+        //     $laporan->save();
+        // });
         
-        LaporanSiswa::factory(25)->make()->each(function ($laporan) use ($siswa_nis, $kelas_ids, $guru_ids) {
-            $laporan->nis = $siswa_nis->random();
-            $laporan->id_kelas = $kelas_ids->random();
-            $laporan->id_guru = $guru_ids->random();
-            $laporan->save();
-        });
+        // LaporanSiswa::factory(25)->make()->each(function ($laporan) use ($siswa_nis, $kelas_ids, $guru_ids) {
+        //     $laporan->nis = $siswa_nis->random();
+        //     $laporan->id_kelas = $kelas_ids->random();
+        //     $laporan->id_guru = $guru_ids->random();
+        //     $laporan->save();
+        // });
     }
 }

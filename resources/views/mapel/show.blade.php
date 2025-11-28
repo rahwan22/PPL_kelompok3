@@ -1,3 +1,6 @@
+
+
+
 @extends('layouts.app')
 
 @section('content')
@@ -17,10 +20,6 @@
         <div class="col-span-1">
             <p class="text-sm font-medium text-gray-500">Nama Mata Pelajaran</p>
             <p class="text-xl font-bold text-gray-900 mt-1">{{ $mapel->nama_mapel }}</p>
-        </div>
-        <div class="col-span-1">
-            <p class="text-sm font-medium text-gray-500">Tingkat/Jenjang</p>
-            <p class="text-xl text-gray-800 mt-1">{{ $mapel->tingkat ? 'Kelas ' . $mapel->tingkat : 'Semua Tingkat' }}</p>
         </div>
         <div class="col-span-1">
             <p class="text-sm font-medium text-gray-500">Dibuat Pada</p>
@@ -49,12 +48,16 @@
                                 <p class="text-sm text-gray-500">
                                     NIP: {{ $guru->nip ?? '-' }} 
                                     @if($guru->pivot->id_kelas)
-                                        | Mengajar di Kelas ID: {{ $guru->pivot->id_kelas }}
+                                        | Mengajar di Kelas ID: {{ $guru->pivot->id_kelas }} 
+                                        {{-- Anda mungkin ingin mengambil nama kelas di sini menggunakan relasi Kelas --}}
                                     @endif
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ route('kelas.show', $guru->pivot->id_kelas) }}" class="text-sm text-blue-500 hover:underline">Lihat daftar siswa</a>
+                        {{-- Mengarahkan ke kelas.show hanya jika id_kelas ada --}}
+                        @if($guru->pivot->id_kelas)
+                            <a href="{{ route('kelas.show', $guru->pivot->id_kelas) }}" class="text-sm text-blue-500 hover:underline">Lihat daftar siswa</a>
+                        @endif
                     </li>
                 @endforeach
             </ul>

@@ -27,7 +27,7 @@
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">No.</th>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Kode</th>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Mata Pelajaran</th>
-                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Tingkat</th>
+                    <!-- <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Tingkat</th> -->
                     <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
@@ -37,7 +37,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-indigo-600">{{ $mapel->kode_mapel }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $mapel->nama_mapel }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $mapel->tingkat ?? '-' }}</td>
+                        <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $mapel->tingkat ?? '-' }}</td> -->
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex justify-center space-x-2">
                                 <a href="{{ route('mapel.show', $mapel->id_mapel) }}" class="text-blue-600 hover:text-blue-900 transition duration-150 p-2 rounded-lg bg-blue-50">

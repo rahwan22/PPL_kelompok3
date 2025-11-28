@@ -1,173 +1,165 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Tambah Data Siswa</h1>
+<div class="container mx-auto p-4 max-w-3xl">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Tambah Siswa Baru</h1>
 
     @if ($errors->any())
-        <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded-lg">
-            <p class="font-bold">Terjadi Kesalahan Validasi:</p>
-            <ul class="list-disc ml-5 space-y-1">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <ul class="list-disc ml-5">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
     @endif
-
-    <form action="{{ route('siswa.store') }}" method="POST" enctype="multipart/form-data">
+    
+    <form action="{{ route('siswa.store') }}" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-xl shadow-lg">
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <h3 class="md:col-span-2 text-xl font-semibold text-indigo-700 mt-4 mb-2 border-b pb-2">Data Siswa</h3>
+            <!-- Data Siswa -->
+            <div class="col-span-full border-b pb-2 mb-4">
+                <h2 class="text-xl font-semibold text-indigo-700">Data Siswa</h2>
+            </div>
             
-            {{-- NIS --}}
             <div>
-                <label for="nis" class="block text-sm font-medium text-gray-700 mb-1">NIS</label>
+                <label for="nis" class="block text-sm font-medium text-gray-700">NIS</label>
                 <input type="text" name="nis" id="nis" value="{{ old('nis') }}" required
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nis') border-red-500 @enderror">
-                @error('nis')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+                       class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nis') border-red-500 @enderror">
             </div>
-
-            {{-- Nama Siswa --}}
+            
             <div>
-                <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Siswa</label>
+                <label for="nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
                 <input type="text" name="nama" id="nama" value="{{ old('nama') }}" required
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nama') border-red-500 @enderror">
-                @error('nama')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+                       class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nama') border-red-500 @enderror">
             </div>
-
-            {{-- Jenis Kelamin --}}
-             <div class="mb-4">
-                <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
-                <select name="jenis_kelamin" id="jenis_kelamin" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="L" 
-                        {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>
-                        Laki-laki
-                    </option>
-                    <option value="P" 
-                        {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>
-                        Perempuan
-                    </option>
-                </select>
-                @error('jenis_kelamin')
-                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Tanggal Lahir --}}
+            
             <div>
-                <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir (Opsional)</label>
-                <input type="date" name="tanggal_lahir" id="tanggal_lahir" value="{{ old('tanggal_lahir') }}"
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('tanggal_lahir') border-red-500 @enderror">
-                @error('tanggal_lahir')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Alamat --}}
-            <div class="md:col-span-2">
-                <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-                <textarea name="alamat" id="alamat" rows="2" required
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('alamat') border-red-500 @enderror">{{ old('alamat') }}</textarea>
-                @error('alamat')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-
-            {{-- Kelas --}}
-            <div class="md:col-span-2">
-                <label for="id_kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                <label for="id_kelas" class="block text-sm font-medium text-gray-700">Kelas</label>
                 <select name="id_kelas" id="id_kelas" required
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_kelas') border-red-500 @enderror">
-                    @foreach($kelas as $k)
-                    <option value="{{ $k->id_kelas }}" {{ old('id_kelas') == $k->id_kelas ? 'selected' : '' }}>
-                        {{ $k->nama_kelas }} ({{ $k->tahun_ajaran }})
-                    </option>
+                        class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_kelas') border-red-500 @enderror">
+                    <option value="">Pilih Kelas</option>
+                    @foreach ($kelas as $kls)
+                        <option value="{{ $kls->id_kelas }}" {{ old('id_kelas') == $kls->id_kelas ? 'selected' : '' }}>
+                            {{ $kls->nama_kelas }}
+                        </option>
                     @endforeach
                 </select>
-                @error('id_kelas')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+            </div>
+            
+            <div>
+                <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
+                <select name="jenis_kelamin" id="jenis_kelamin" required
+                        class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('jenis_kelamin') border-red-500 @enderror">
+                    <option value="">Pilih</option>
+                    <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                <input type="date" name="tanggal_lahir" id="tanggal_lahir" value="{{ old('tanggal_lahir') }}" 
+                       class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('tanggal_lahir') border-red-500 @enderror">
             </div>
 
-            <!-- Foto -->
-            <div class="md:col-span-2">
-                <label for="foto" class="block text-sm font-medium text-gray-700 mb-1">Foto Profil (Maks 2MB)</label>
+            <div>
+                <label for="foto" class="block text-sm font-medium text-gray-700">Foto Siswa</label>
                 <input type="file" name="foto" id="foto" 
-                        class="mt-1 block w-full text-sm text-gray-500
-                              file:mr-4 file:py-2 file:px-4
-                              file:rounded-full file:border-0
-                              file:text-sm file:font-semibold
-                              file:bg-indigo-50 file:text-indigo-700
-                              hover:file:bg-indigo-100 @error('foto') border-red-500 @enderror">
-                @error('foto')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-        </div>
-
-        <!-- Bagian Data Orang Tua -->
-        <h3 class="text-xl font-semibold text-indigo-700 mt-8 mb-4 border-b pb-2">Data Orang Tua</h3>
-        
-        <div class="p-4 mb-6 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
-            <p class="text-sm font-medium">Anda dapat **membuat data Orang Tua baru** atau **menghubungkan ke Orang Tua yang sudah terdaftar**.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {{-- Nama Orang Tua BARU (FIXED: Ganti nama input) --}}
-            <div>
-                <label for="orangtua" class="block text-sm font-medium text-gray-700 mb-1">Nama Orang Tua Baru (Opsional)</label>
-                <input type="text" name="orangtua" id="orangtua" value="{{ old('orangtua') }}" placeholder="Kosongkan jika memilih Orang Tua yang sudah ada"
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 @error('orangtua') border-red-500 @enderror">
-                @error('orangtua')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-            
-            {{-- Nomor WA Orang Tua BARU (FIXED: Ganti nama input & label/error ref) --}}
-            <div>
-                <label for="no_wa" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Baru (Contoh: 62812xxxx)</label>
-                <input type="text" name="no_wa" id="no_wa" value="{{ old('no_wa') }}" placeholder="Tanpa '+', Wajib diisi jika Nama Orang Tua di atas diisi."
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 @error('no_wa') border-red-500 @enderror">
-                @error('no_wa')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 @error('foto') border-red-500 @enderror">
             </div>
 
-            {{-- Dropdown Opsi: Pilih Orang Tua Yang Sudah Ada --}}
-            <!-- <div class="md:col-span-2 mt-4">
-                <p class="text-sm font-semibold text-gray-700 mb-1">Atau Pilih Orang Tua Yang Sudah Ada:</p>
-                <select name="id_orangtua" id="id_orangtua" 
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_orangtua') border-red-500 @enderror">
-                    <option value="">-- Pilih Orang Tua (Jika Sudah Terdaftar) --</option>
-                    @foreach($orangtua as $o)
-                    <option value="{{ $o->id_orangtua }}" {{ old('id_orangtua') == $o->id_orangtua ? 'selected' : '' }}>
-                        {{ $o->nama }} (WA: {{ $o->no_wa ?? '-' }})
-                    </option>
+            <div class="col-span-full">
+                <label for="alamat" class="block text-sm font-medium text-gray-700">Alamat</label>
+                <textarea name="alamat" id="alamat" rows="3"
+                          class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('alamat') border-red-500 @enderror">{{ old('alamat') }}</textarea>
+            </div>
+
+            <!-- Data Orang Tua -->
+            <div class="col-span-full border-b pb-2 mb-4 mt-4">
+                <h2 class="text-xl font-semibold text-indigo-700">Data Orang Tua</h2>
+            </div>
+
+            <div class="col-span-full">
+                <label for="orangtua_mode" class="block text-sm font-medium text-gray-700 mb-2">Pilih Mode Orang Tua:</label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="orangtua_mode" value="exist" id="modeExist" 
+                                class="form-radio text-indigo-600 h-4 w-4" checked>
+                        <span class="ml-2 text-gray-700">Pilih dari yang Sudah Ada</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="orangtua_mode" value="new" id="modeNew" 
+                                class="form-radio text-indigo-600 h-4 w-4" {{ (old('nama_ortu_baru') || old('no_wa_ortu_baru')) ? 'checked' : '' }}>
+                        <span class="ml-2 text-gray-700">Buat Baru</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pilihan Orang Tua (Mode EXIST) -->
+            <div id="orangtuaExist" class="col-span-full transition-all duration-300 {{ (old('nama_ortu_baru') || old('no_wa_ortu_baru')) ? 'hidden' : 'block' }}">
+                <label for="id_orangtua_pilihan" class="block text-sm font-medium text-gray-700">Pilih Orang Tua</label>
+                <select name="id_orangtua_pilihan" id="id_orangtua_pilihan"
+                        class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_orangtua_pilihan') border-red-500 @enderror">
+                    <option value="">-- Pilih Orang Tua/Wali --</option>
+                    @foreach ($orangtua as $ortu)
+                        <option value="{{ $ortu->id_orangtua }}" {{ old('id_orangtua_pilihan') == $ortu->id_orangtua ? 'selected' : '' }}>
+                            {{ $ortu->nama }} (WA: {{ $ortu->no_wa }})
+                        </option>
                     @endforeach
                 </select>
-                <p class="mt-1 text-xs text-indigo-600">Pilih opsi ini HANYA JIKA Anda tidak mengisi Nama dan Nomor WA Orang Tua Baru di atas.</p>
-                @error('id_orangtua')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
-            </div> -->
+            </div>
 
+            <!-- Data Orang Tua Baru (Mode NEW) -->
+            <div id="orangtuaNew" class="col-span-full grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300 {{ (old('nama_ortu_baru') || old('no_wa_ortu_baru')) ? 'block' : 'hidden' }}">
+                <div>
+                    <label for="nama_ortu_baru" class="block text-sm font-medium text-gray-700">Nama Orang Tua Baru</label>
+                    <input type="text" name="nama_ortu_baru" id="nama_ortu_baru" value="{{ old('nama_ortu_baru') }}"
+                           class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('nama_ortu_baru') border-red-500 @enderror">
+                </div>
+                <div>
+                    <label for="no_wa_ortu_baru" class="block text-sm font-medium text-gray-700">No. WhatsApp Baru</label>
+                    <input type="text" name="no_wa_ortu_baru" id="no_wa_ortu_baru" value="{{ old('no_wa_ortu_baru') }}"
+                           class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('no_wa_ortu_baru') border-red-500 @enderror">
+                    @error('no_wa_ortu_baru')
+                        <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+            
         </div>
-
-
+        
         <div class="mt-8 pt-4 border-t flex justify-end">
-            <a href="{{ route('siswa.index') }}" class="px-6 py-2 text-sm font-semibold rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-50 mr-3">Batal</a>
-            <button type="submit" class="px-6 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition duration-150 ease-in-out">
-                Simpan Siswa
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                Simpan Data Siswa
             </button>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modeExist = document.getElementById('modeExist');
+        const modeNew = document.getElementById('modeNew');
+        const orangtuaExistDiv = document.getElementById('orangtuaExist');
+        const orangtuaNewDiv = document.getElementById('orangtuaNew');
+        
+        function toggleOrangTuaMode() {
+            if (modeExist.checked) {
+                orangtuaExistDiv.classList.remove('hidden');
+                orangtuaNewDiv.classList.add('hidden');
+            } else if (modeNew.checked) {
+                orangtuaExistDiv.classList.add('hidden');
+                orangtuaNewDiv.classList.remove('hidden');
+            }
+        }
+
+        modeExist.addEventListener('change', toggleOrangTuaMode);
+        modeNew.addEventListener('change', toggleOrangTuaMode);
+
+        // Panggil saat load untuk memastikan kondisi awal
+        toggleOrangTuaMode();
+    });
+</script>
 @endsection

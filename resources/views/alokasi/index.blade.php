@@ -56,6 +56,7 @@
                                         <form action="{{ route('alokasi.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus alokasi ini? Tindakan ini tidak dapat dibatalkan.');">
                                             @csrf
                                             @method('DELETE')
+
                                             <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150">Hapus</button>
                                         </form>
                                     </td>

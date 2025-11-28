@@ -28,32 +28,43 @@ class KelasController extends Controller
 {
     // Eager load relasi waliKelas dan siswa untuk optimasi performa
     $query = Kelas::with(['waliKelas', 'siswa'])
-                  ->orderBy('tahun_ajaran', 'desc')
-                  ->orderBy('nama_kelas');
+                ->orderBy('tahun_ajaran', 'desc')
+                ->orderBy('nama_kelas');
     
     $user = Auth::user();
     
-    // 1. Pengecekan ROLE
+    // Cek Peran
     if ($user->role === 'guru') {
-        // Jika user adalah guru, kita cari ID kelas yang diwalikelasi oleh guru ini.
-        
-        // Asumsi: Guru Model memiliki relasi ke User (contoh: $user->guru)
-        // Kita perlu mencari data Guru yang terkait dengan user yang login.
+        // Cari data Guru (asumsi: 'id_user' di tabel 'guru' merujuk ke 'id' di 'users')
         $guru = Guru::where('id_user', $user->id)->first();
         
-        if ($guru && $guru->id_kelas_wali) {
-            // Jika guru ditemukan DAN dia adalah wali kelas dari suatu kelas,
-            // filter query kelas hanya untuk kelas tersebut.
-            $query->where('id_kelas', $guru->id_kelas_wali);
-        } else {
-            // Jika guru tidak ditemukan atau bukan wali kelas, kembalikan query kosong
-            // untuk mencegah data kelas lain muncul.
-            $query->whereRaw('1 = 0'); // Query yang selalu false
+        $allowedKelasIds = collect();
+
+        if ($guru) {
+            
+            // A. KELAS YANG DIWALIKAN
+            if ($guru->id_kelas_wali) {
+                $allowedKelasIds->push($guru->id_kelas_wali);
+            }
+
+            // B. KELAS YANG DIAJAR (Menggunakan relasi many-to-many)
+            // Relasi 'kelasAjar' sudah menggunakan klausa distinct() dan withPivot().
+            $kelasDiAjarIds = $guru->kelasAjar()->pluck('id_kelas');
+            
+            // Gabungkan semua ID kelas (Wali + Ajar) dan pastikan unik
+            $allowedKelasIds = $allowedKelasIds->merge($kelasDiAjarIds)->unique();
         }
         
+        // 2. Terapkan Filter pada Query Utama
+        if ($allowedKelasIds->isNotEmpty()) {
+            // Tampilkan kelas yang ID-nya ada di daftar allowedKelasIds
+            $query->whereIn('id_kelas', $allowedKelasIds);
+        } else {
+            // Guru login tetapi tidak punya kelas wali maupun kelas ajar
+            $query->whereRaw('1 = 0'); 
+        }
     }
-    // Jika role adalah 'admin' atau 'kepala_sekolah', tidak ada filter yang ditambahkan, 
-    // sehingga semua kelas akan diambil.
+    // Admin dan Kepala Sekolah melihat semua kelas karena tidak ada filter yang ditambahkan.
 
     $kelas = $query->get();
     

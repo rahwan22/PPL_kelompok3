@@ -259,7 +259,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('guru.index') }}"><i
                                         class="bi bi-person-badge"></i> Semua Guru</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('siswa.index') }}"><i
-                                        class="bi bi-people"></i> Semua Siswa</a></li>
+                                        class="bi bi-people"></i>DATA Siswa/kelas </a></li>
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('kelas.index') }}"><i
                                         class="bi bi-building"></i> Semua Kelas</a></li>
@@ -297,10 +297,12 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('absensi.index') }}"><i
                                         class="bi bi-card-checklist"></i> LIhat Absensi</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}"><i
-                                        class="bi bi-pencil-square"></i> Input Nilai</a></li>
+                                        class="bi bi-pencil-square"></i> Input Nilai Lapor</a></li>
 
-                        <li class="nav-item"><a class="nav-link" href="{{ route('lihat.kelas') }}"><i
-                                        class="bi bi-people"></i> Lihat Kelas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('jadwal.guru.saya') }}"><i
+                                        class="bi bi-people"></i> Alokasi Kelas</a></li>
+
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('lihat.mapel') }}"><i
                                         class="bi bi-journal-bookmark"></i> Lihat Mapel</a></li>
 

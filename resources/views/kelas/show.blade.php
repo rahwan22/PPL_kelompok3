@@ -24,7 +24,9 @@
     <div class="card shadow-lg mb-5 border-0 rounded-3">
         <div class="card-header bg-primary text-white py-3 rounded-top-3">
             <h4 class="mb-0">{{ $kelas->nama_kelas }}</h4>
+            
         </div>
+        
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
@@ -50,6 +52,7 @@
             <h4 class="mb-0">
                 <i class="fas fa-users me-2"></i> Daftar Siswa
             </h4>
+      
         </div>
         <div class="card-body p-0">
             @if ($kelas->siswa->count() > 0)

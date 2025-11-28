@@ -12,6 +12,7 @@ class MataPelajaran extends Model
     // Definisikan primary key dan nama tabel
     protected $primaryKey = 'id_mapel';
     protected $table = 'mata_pelajaran';
+    protected $guarded = ['id_mapel'];
     
     // Tentukan kolom yang dapat diisi secara massal (fillable)
     protected $fillable = [

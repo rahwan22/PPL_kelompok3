@@ -31,8 +31,8 @@ class KelasFactory extends Factory
 
         while (!$uniqueNameFound && $attempt < $maxAttempts) {
             $tingkat = $this->faker->numberBetween(1, 6); 
-            $huruf = $this->faker->randomElement(['A', 'B', 'C', 'D']);
-            $nomorRombel = $this->faker->numberBetween(1, 3); // Tambahkan nomor rombel untuk variasi lebih
+            // $huruf = $this->faker->randomElement(['A', 'B', 'C', 'D']);
+            // $nomorRombel = $this->faker->numberBetween(1, 3); // Tambahkan nomor rombel untuk variasi lebih
             
             // Menggunakan Angka Romawi untuk tingkat agar lebih bervariasi dan jelas
             $tingkatRomawi = match ($tingkat) {
@@ -46,7 +46,7 @@ class KelasFactory extends Factory
             };
 
             // Contoh: "Kelas I-A1", "Kelas II-B2"
-            $generatedNamaKelas = 'Kelas ' . $tingkatRomawi . '-' . $huruf . $nomorRombel;
+            $generatedNamaKelas = 'Kelas ' . $tingkatRomawi ;
             
             // Kita juga harus mempertimbangkan tahun ajaran untuk keunikan global jika diperlukan
             // Namun, dalam kasus ini, nama_kelas saja sudah harus cukup unik untuk factory

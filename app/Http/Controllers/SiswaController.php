@@ -16,15 +16,21 @@ use Carbon\Carbon;
 
 class SiswaController extends Controller
 {
-    // 🔹 Tampilkan semua siswa
+    /**
+     * Tampilkan semua siswa.
+     */
     public function index()
     {
-        // Pastikan relasi di-load untuk kolom Kelas
-        $siswa = Siswa::with(['kelas', 'orangtua'])->get();
-        return view('siswa.index', compact('siswa'));
+        // Ambil Kelas, muat Siswa di dalamnya (termasuk relasi Orang Tua dari Siswa)
+        $kelas = Kelas::with(['siswa', 'siswa.orangtua']) 
+               ->orderBy('nama_kelas')
+               ->get();
+        return view('siswa.index', compact('kelas')); 
     }
 
-    // 🔹 Tampilkan form tambah
+    /**
+     * Tampilkan form tambah siswa.
+     */
     public function create()
     {
         $kelas = Kelas::all();
@@ -32,9 +38,12 @@ class SiswaController extends Controller
         return view('siswa.create', compact('kelas', 'orangtua'));
     }
 
-    // 🔹 Simpan data baru (Diperbarui dengan logika foto dan Orang Tua)
+    /**
+     * Simpan data siswa baru, termasuk logika untuk Orang Tua.
+     */
     public function store(Request $request)
     {
+        // Aturan validasi
         $validator = Validator::make($request->all(), [
             'nis' => 'required|string|max:20|unique:siswa,nis',
             'nama' => 'required|string|max:255',
@@ -42,8 +51,17 @@ class SiswaController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'alamat' => 'nullable|string',
             'id_kelas' => 'required|exists:kelas,id_kelas',
-            'id_orangtua' => 'nullable|exists:orangtua,id_orangtua',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi Foto
+            
+            'id_orangtua_pilihan' => 'nullable|exists:orangtua,id_orangtua', 
+            'nama_ortu_baru' => 'nullable|string|max:255', 
+            
+            // ✅ PERBAIKAN KRUSIAL: Menggunakan 'no_wa' sesuai skema database Anda
+            'no_wa_ortu_baru' => 'nullable|string|max:50|unique:orangtua,no_wa', 
+            
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+        ], [
+            // Pesan kustom untuk Orang Tua baru
+            'no_wa_ortu_baru.unique' => 'Nomor WA Orang Tua sudah terdaftar di database.',
         ]);
 
         if ($validator->fails()) {
@@ -54,15 +72,44 @@ class SiswaController extends Controller
         try {
             $fotoPath = null;
             if ($request->hasFile('foto')) {
-                // Simpan foto di folder 'public/photos/siswa'
                 $fotoPath = $request->file('foto')->store('photos/siswa', 'public');
             }
+
+            // =========================================================
+            // LOGIKA PENCARIAN/PEMBUATAN DATA ORANG TUA BARU
+            // =========================================================
+            $orangtua_id = $request->id_orangtua_pilihan; 
+
+            // Cek apakah user mengisi data Orang Tua baru
+            if ($request->filled('nama_ortu_baru') && $request->filled('no_wa_ortu_baru')) {
+                
+                // Cek duplikasi Orang Tua berdasarkan nomor WA (menggunakan 'no_wa')
+                $existingOrangtua = Orangtua::where('no_wa', $request->no_wa_ortu_baru)->first();
+
+                if ($existingOrangtua) {
+                    // Gunakan ID yang sudah ada jika duplikasi ditemukan
+                    $orangtua_id = $existingOrangtua->id_orangtua; 
+                } else {
+                    // Buat data Orang Tua baru
+                    $ortu_baru = Orangtua::create([
+                        'nama' => $request->nama_ortu_baru,
+                        'no_wa' => $request->no_wa_ortu_baru, // ✅ Perbaikan field
+                    ]);
+                    $orangtua_id = $ortu_baru->id_orangtua;
+                }
+            }
+            // =========================================================
+
+            // Siapkan data Siswa
+            $data = $request->except([
+                '_token', 'foto', 
+                'id_orangtua_pilihan', 'nama_ortu_baru', 'no_wa_ortu_baru' // Kecualikan field Ortu
+            ]);
             
-            // Menggunakan data request, dan menimpa dengan data yang diproses
-            $data = $request->except(['_token', 'foto']);
             $data['tanggal_lahir'] = $request->tanggal_lahir ? Carbon::parse($request->tanggal_lahir) : null;
             $data['aktif'] = 1;
             $data['foto'] = $fotoPath;
+            $data['id_orangtua'] = $orangtua_id; // Masukkan ID Ortu yang sudah diproses
             
             Siswa::create($data);
 
@@ -75,29 +122,29 @@ class SiswaController extends Controller
             if ($fotoPath) {
                 Storage::disk('public')->delete($fotoPath);
             }
-            return redirect()->back()->with('error', 'Gagal menambahkan data siswa: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambahkan data siswa: ' . $e->getMessage())->withInput();
         }
     }
 
     /**
-     * Display the specified resource (Halaman Detail).
+     * Tampilkan detail siswa.
      */
     public function show($nis)
-    
     {
         $userRole = auth()->user()->role;
         
-        // Pastikan hanya admin DAN kepala_sekolah yang bisa mengakses show
+        // Pastikan hanya role yang diizinkan yang bisa mengakses show
         if ($userRole !== 'admin' && $userRole !== 'kepala_sekolah' && $userRole !== 'guru') {
-            // Jika role tidak diizinkan, kembalikan response error 403 (Forbidden)
             abort(403, 'Akses Ditolak. Anda tidak memiliki izin untuk melihat detail kelas.');
         }
-        // Pastikan relasi di-load untuk halaman detail
-        $siswa = Siswa::where('nis', $nis)->with(['kelas', 'orangtua'])->firstOrFail();
+        
+        $siswa = Siswa::with(['orangtua', 'kelas'])->where('nis', $nis)->firstOrFail();
         return view('siswa.detail', compact('siswa'));
     }
 
-    // 🔹 Form edit siswa
+    /**
+     * Tampilkan form edit siswa.
+     */
     public function edit($nis)
     {
         $siswa = Siswa::where('nis', $nis)->firstOrFail();
@@ -106,18 +153,26 @@ class SiswaController extends Controller
         return view('siswa.edit', compact('siswa', 'kelas', 'orangtua'));
     }
 
-    // 🔹 Update data siswa (Diperbarui dengan logika foto)
+    /**
+     * Update data siswa.
+     */
     public function update(Request $request, $nis)
     {
         $siswa = Siswa::where('nis', $nis)->firstOrFail();
 
+        // Aturan validasi
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
             'tanggal_lahir' => 'nullable|date',
             'alamat' => 'nullable|string',
             'id_kelas' => 'required|exists:kelas,id_kelas',
-            'id_orangtua' => 'nullable|exists:orangtua,id_orangtua',
+            'id_orangtua_pilihan' => 'nullable|exists:orangtua,id_orangtua',
+            'nama_ortu_baru' => 'nullable|string|max:255',
+            
+            // ✅ PERBAIKAN KRUSIAL: Menggunakan 'no_wa' sesuai skema database Anda
+            'no_wa_ortu_baru' => 'nullable|string|max:50',
+            
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'hapus_foto' => 'nullable|boolean', 
             'aktif' => 'nullable|boolean', 
@@ -129,7 +184,36 @@ class SiswaController extends Controller
 
         DB::beginTransaction();
         try {
-            $data = $request->except(['_token', '_method', 'foto', 'hapus_foto']);
+            
+            // =========================================================
+            // LOGIKA PENCARIAN/PEMBUATAN DATA ORANG TUA (UPDATE)
+            // =========================================================
+            $orangtua_id = $request->id_orangtua_pilihan; 
+
+            // Cek apakah user mengisi data Orang Tua baru
+            if ($request->filled('nama_ortu_baru') && $request->filled('no_wa_ortu_baru')) {
+                
+                // Cek duplikasi Orang Tua berdasarkan nomor WA (menggunakan 'no_wa')
+                $existingOrangtua = Orangtua::where('no_wa', $request->no_wa_ortu_baru)->first();
+
+                if ($existingOrangtua) {
+                    // Gunakan ID yang sudah ada
+                    $orangtua_id = $existingOrangtua->id_orangtua; 
+                } else {
+                    // Buat data Orang Tua baru
+                    $ortu_baru = Orangtua::create([
+                        'nama' => $request->nama_ortu_baru,
+                        'no_wa' => $request->no_wa_ortu_baru, // ✅ Perbaikan field
+                    ]);
+                    $orangtua_id = $ortu_baru->id_orangtua;
+                }
+            }
+            // =========================================================
+
+            $data = $request->except([
+                '_token', '_method', 'foto', 'hapus_foto', 
+                'id_orangtua_pilihan', 'nama_ortu_baru', 'no_wa_ortu_baru' // Kecualikan field Ortu
+            ]);
             $oldFotoPath = $siswa->foto;
 
             // Logika Hapus Foto Lama
@@ -140,7 +224,7 @@ class SiswaController extends Controller
 
             // Logika Upload Foto Baru
             if ($request->hasFile('foto')) {
-                // Hapus foto lama jika ada dan tidak sedang dihapus
+                // Hapus foto lama jika ada (kecuali jika sedang dihapus)
                 if ($oldFotoPath && !$request->boolean('hapus_foto')) {
                     Storage::disk('public')->delete($oldFotoPath);
                 }
@@ -152,11 +236,14 @@ class SiswaController extends Controller
                  $data['foto'] = $oldFotoPath;
             }
             
-            // Pastikan tanggal lahir diubah ke format Carbon atau null
+            // Konversi tanggal lahir
             $data['tanggal_lahir'] = $request->tanggal_lahir ? Carbon::parse($request->tanggal_lahir) : null;
             
-            // Tangani field 'aktif' jika ada di request
+            // Tangani field 'aktif'
             $data['aktif'] = $request->has('aktif') ? $request->boolean('aktif') : $siswa->aktif;
+            
+            // Masukkan ID Orang Tua yang sudah diproses
+            $data['id_orangtua'] = $orangtua_id;
 
 
             $siswa->update($data);
@@ -166,11 +253,13 @@ class SiswaController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal memperbarui data siswa: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memperbarui data siswa: ' . $e->getMessage())->withInput();
         }
     }
 
-    // 🔹 Hapus siswa
+    /**
+     * Hapus siswa.
+     */
     public function destroy($nis)
     {
         $siswa = Siswa::where('nis', $nis)->firstOrFail();
@@ -198,7 +287,9 @@ class SiswaController extends Controller
         }
     }
 
-    // ✅ Generate QR Code
+    /**
+     * Generate QR Code untuk absensi.
+     */
     public function generateQR($nis)
     {
         $siswa = Siswa::findOrFail($nis);
@@ -206,7 +297,7 @@ class SiswaController extends Controller
         $fileName = $nis . '.png';
         $filePath = 'qr/' . $fileName;
 
-         // Generate QR
+         // Generate QR code dengan konten NIS
         $qr = QrCode::format('png')
             ->size(300)
             ->errorCorrection('H')
@@ -222,17 +313,35 @@ class SiswaController extends Controller
         return back()->with('success', 'QR Code berhasil dibuat!');
     }
 
-    // ✅ Download QR Code
+    /**
+     * Download QR Code.
+     */
     public function downloadQR($nis)
     {
         $siswa = Siswa::findOrFail($nis);
-        // Perbaiki path agar mengarah ke public disk
+        // Path lengkap ke file di public disk
         $filePath = storage_path('app/public/qr/' . $siswa->qr_code);
 
-        if (!file_exists($filePath)) {
-            return back()->with('error', 'QR Code belum dibuat.');
+        if (!$siswa->qr_code || !file_exists($filePath)) {
+            return back()->with('error', 'QR Code belum dibuat atau file tidak ditemukan.');
         }
 
         return response()->download($filePath, $siswa->nis . '_qrcode.png');
     }
+
+    // Fungsi untuk menampilkan kartu siswa minimalis untuk dicetak
+public function cetakId(Siswa $siswa)
+{
+    // Pastikan relasi kelas dimuat
+    $siswa->load('kelas'); 
+
+    // Menggunakan view minimalis yang baru dibuat
+    return view('siswa.cetak_id_siswa', compact('siswa'));
+
+    // Jika Anda ingin mengunduh sebagai PDF, Anda perlu menggunakan library seperti DomPDF:
+    
+    $pdf = PDF::loadView('siswa.cetak_id_siswa', compact('siswa'));
+    return $pdf->download('kartu-siswa-' . $siswa->nis . '.pdf');
+    
+}
 }

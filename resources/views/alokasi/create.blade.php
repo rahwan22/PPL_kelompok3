@@ -3,136 +3,168 @@
 @section('title', 'Tambah Alokasi Pengajaran')
 
 @section('content')
-<div class="container mx-auto p-4 max-w-lg">
+
+<div class="container mx-auto p-4">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">Tambah Alokasi Pengajaran Baru</h1>
 
-    @if (session('error'))
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-md" role="alert">
-            {{ session('error') }}
-        </div>
-    @endif
-    
-    @if ($errors->any())
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-md">
-            <p class="font-bold">Terjadi Kesalahan Validasi:</p>
-            <ul class="list-disc list-inside mt-2">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <div class="bg-white p-8 shadow-xl rounded-xl">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8">
         <form action="{{ route('alokasi.store') }}" method="POST">
             @csrf
 
-            {{-- 1. PILIH GURU --}}
+            {{-- Pesan Error Validasi (Biarkan seperti semula) --}}
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Gagal menyimpan!</strong>
+                    <span class="block sm:inline">Periksa kembali input Anda.</span>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- 1. Pilih Guru --}}
             <div class="mb-5">
-                <label for="id_guru" class="block text-sm font-medium text-gray-700 mb-2">Pilih Guru Pengajar:</label>
-                <select name="id_guru" id="id_guru" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_guru" class="block text-gray-700 text-sm font-semibold mb-2">Pilih Guru:</label>
+                <select name="id_guru" id="id_guru" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 @error('id_guru') border-red-500 @enderror">
                     <option value="">-- Pilih Guru --</option>
-                    @foreach ($gurus as $guru)
-                        <option value="{{ $guru->id_guru }}" {{ old('id_guru') == $guru->id_guru ? 'selected' : '' }}>
-                            {{ $guru->nama }} ({{ $guru->nip }})
+                    @foreach ($guru as $guruItem) {{-- Ubah nama variabel agar tidak menimpa variabel $guru di controller --}}
+                        <option value="{{ $guruItem->id_guru }}" {{ old('id_guru') == $guruItem->id_guru ? 'selected' : '' }}>
+                            {{ $guruItem->nama }}
                         </option>
                     @endforeach
                 </select>
+                @error('id_guru')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            {{-- 2. PILIH MATA PELAJARAN --}}
+            {{-- 2. Pilih Mata Pelajaran --}}
             <div class="mb-5">
-                <label for="id_mapel" class="block text-sm font-medium text-gray-700 mb-2">Pilih Mata Pelajaran:</label>
-                {{-- Kita akan memuat semua Mapel untuk filter Kelas nanti --}}
-                <select name="id_mapel" id="id_mapel" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_mapel" class="block text-gray-700 text-sm font-semibold mb-2">Pilih Mata Pelajaran:</label>
+                <select name="id_mapel" id="id_mapel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 @error('id_mapel') border-red-500 @enderror">
                     <option value="">-- Pilih Mata Pelajaran --</option>
                     @foreach ($mapels as $mapel)
                         <option value="{{ $mapel->id_mapel }}" {{ old('id_mapel') == $mapel->id_mapel ? 'selected' : '' }}>
-                            {{ $mapel->nama_mapel }} ({{ $mapel->kode_mapel }})
+                            {{ $mapel->nama_mapel }}
                         </option>
                     @endforeach
                 </select>
-                <p id="mapel-info" class="text-xs mt-1 text-gray-500 hidden">Memuat Kelas yang tersedia...</p>
+                @error('id_mapel')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            {{-- 3. PILIH KELAS (AKAN DIISI VIA AJAX) --}}
+            {{-- 3. Pilih Kelas --}}
             <div class="mb-6">
-                <label for="id_kelas" class="block text-sm font-medium text-gray-700 mb-2">Pilih Kelas yang Belum Diajar Mapel Ini:</label>
-                <select name="id_kelas" id="id_kelas" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required disabled>
-                    <option value="">-- Pilih Mapel & Guru terlebih dahulu --</option>
+                <label for="id_kelas" class="block text-gray-700 text-sm font-semibold mb-2">Pilih Kelas:</label>
+                <select name="id_kelas" id="id_kelas" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 @error('id_kelas') border-red-500 @enderror">
+                    <option value="">-- Pilih Kelas --</option>
+                    {{-- Opsi kelas akan dimuat ulang oleh JS --}}
+                    {{-- Kita tetap bisa memuat semua opsi di sini sebagai fallback/untuk JS nanti --}}
+                    @foreach ($kelas as $k)
+                        <option 
+                            value="{{ $k->id_kelas }}" 
+                            data-mapel-id="0" {{-- Tambahkan data-mapel-id dummy --}}
+                            class="kelas-option"
+                            {{ old('id_kelas') == $k->id_kelas ? 'selected' : '' }}
+                        >
+                            {{ $k->nama_kelas }}
+                        </option>
+                    @endforeach
                 </select>
+                @error('id_kelas')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
+                <p id="kelas-warning" class="text-sm text-yellow-600 mt-2 hidden">⚠️ Semua kelas untuk Mata Pelajaran ini sudah dialokasikan.</p>
             </div>
 
-            <div class="flex justify-end space-x-3">
-                <a href="{{ route('alokasi.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300">
-                    Batal
-                </a>
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+            {{-- Tombol Submit --}}
+            <div class="flex items-center justify-between">
+                <button type="submit" id="submit-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Simpan Alokasi
                 </button>
+                <a href="{{ route('alokasi.index') }}" class="text-gray-500 hover:text-gray-700 font-semibold transition duration-150">
+                    Batal
+                </a>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const guruSelect = document.getElementById('id_guru');
-    const mapelSelect = document.getElementById('id_mapel');
-    const kelasSelect = document.getElementById('id_kelas');
-    const mapelInfo = document.getElementById('mapel-info');
-
-    // Fungsi untuk mengambil dan memuat daftar Kelas
-    function loadAvailableClasses() {
-        const id_guru = guruSelect.value;
-        const id_mapel = mapelSelect.value;
+    document.addEventListener('DOMContentLoaded', function () {
+        const mapelDropdown = document.getElementById('id_mapel');
+        const kelasDropdown = document.getElementById('id_kelas');
+        const kelasWarning = document.getElementById('kelas-warning');
+        const submitButton = document.getElementById('submit-button');
         
-        kelasSelect.innerHTML = '<option value="">Memuat...</option>';
-        kelasSelect.disabled = true;
-        mapelInfo.classList.remove('hidden');
+        // Data alokasi yang sudah terpakai dari Controller
+        const allocatedCombinations = @json($allocatedCombinations);
+        
+        // Simpan semua opsi kelas asli
+        const allKelasOptions = Array.from(kelasDropdown.options).slice(1); // Abaikan opsi '-- Pilih Kelas --'
 
-        // Pastikan Guru dan Mapel sudah dipilih
-        if (!id_guru || !id_mapel) {
-            kelasSelect.innerHTML = '<option value="">Pilih Guru & Mapel terlebih dahulu</option>';
-            mapelInfo.classList.add('hidden');
-            return;
+        function filterKelasOptions() {
+            const selectedMapelId = mapelDropdown.value;
+            let currentSelectedKelasId = kelasDropdown.value;
+            let availableKelas = 0;
+
+            // Bersihkan dan kembalikan hanya opsi default
+            kelasDropdown.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+
+            if (selectedMapelId) {
+                // Iterasi melalui semua opsi kelas
+                allKelasOptions.forEach(option => {
+                    const kelasId = option.value;
+                    
+                    // Cek apakah kombinasi Mapel dan Kelas sudah teralokasi
+                    const isAllocated = allocatedCombinations.some(item => 
+                        item.id_mapel == selectedMapelId && item.id_kelas == kelasId
+                    );
+                    
+                    // Jika belum teralokasi, tampilkan opsi kelas tersebut
+                    if (!isAllocated) {
+                        const newOption = option.cloneNode(true);
+                        kelasDropdown.appendChild(newOption);
+                        availableKelas++;
+                    }
+                });
+                
+                // Coba pertahankan nilai yang dipilih sebelumnya jika masih ada
+                if (kelasDropdown.querySelector(`option[value="${currentSelectedKelasId}"]`)) {
+                     kelasDropdown.value = currentSelectedKelasId;
+                } else {
+                    // Reset pilihan kelas jika tidak lagi tersedia
+                    kelasDropdown.value = '';
+                }
+
+            } else {
+                // Jika Mata Pelajaran belum dipilih, kembalikan semua kelas (kecuali yang pertama)
+                allKelasOptions.forEach(option => {
+                    kelasDropdown.appendChild(option.cloneNode(true));
+                });
+            }
+
+            // Tampilkan warning jika tidak ada kelas tersedia
+            if (selectedMapelId && availableKelas === 0) {
+                kelasWarning.classList.remove('hidden');
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                kelasWarning.classList.add('hidden');
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }
 
-        // 1. Lakukan permintaan AJAX
-        fetch(`/alokasi/available-kelas?guru_id=${id_guru}&mapel_id=${id_mapel}`)
-            .then(response => response.json())
-            .then(data => {
-                let options = '<option value="">-- Pilih Kelas --</option>';
-                
-                // 2. Isi dropdown Kelas dengan data yang tersedia
-                if (data.length > 0) {
-                    data.forEach(kelas => {
-                        options += `<option value="${kelas.id_kelas}">${kelas.nama_kelas}</option>`;
-                    });
-                    kelasSelect.disabled = false;
-                } else {
-                    options = '<option value="">Semua Kelas sudah diajar Mapel ini oleh Guru lain, atau Guru ini sudah mengajar Mapel ini di semua Kelas.</option>';
-                    kelasSelect.disabled = true;
-                }
-                
-                kelasSelect.innerHTML = options;
-                mapelInfo.classList.add('hidden');
-            })
-            .catch(error => {
-                console.error('Error fetching available classes:', error);
-                kelasSelect.innerHTML = '<option value="">Gagal memuat Kelas</option>';
-                mapelInfo.classList.add('hidden');
-            });
-    }
+        // Jalankan fungsi saat Mapel diubah
+        mapelDropdown.addEventListener('change', filterKelasOptions);
 
-    // Event listeners
-    guruSelect.addEventListener('change', loadAvailableClasses);
-    mapelSelect.addEventListener('change', loadAvailableClasses);
-    
-    // Cek pada saat load awal jika ada old input
-    if (guruSelect.value && mapelSelect.value) {
-        loadAvailableClasses();
-    }
-});
+        // Jalankan fungsi saat halaman dimuat (untuk old() value)
+        filterKelasOptions(); 
+    });
 </script>
+
 @endsection

@@ -3,30 +3,68 @@
 @section('title', 'Jadwal Mengajar Saya')
 
 @section('content')
-<div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-2 text-gray-800">Jadwal Mengajar</h1>
-    <p class="text-xl text-indigo-600 mb-6">Guru: {{ $guru->nama }}</p>
 
-    <div class="bg-white shadow-xl rounded-xl overflow-hidden">
+<div class="container mx-auto p-4 max-w-4xl">
+    <h1 class="text-3xl font-extrabold mb-6 text-indigo-800 border-b-2 border-indigo-200 pb-2">
+        Jadwal Mengajar Saya
+    </h1>
+
+    {{-- Kartu Info Guru --}}
+    <div class="bg-white shadow-xl rounded-xl p-6 mb-8 border-t-4 border-indigo-500">
+        <h2 class="text-xl font-semibold text-gray-700">
+            Profil Guru
+        </h2>
+        <p class="text-3xl font-bold text-indigo-600 mt-1">
+            {{ $guru->nama ?? 'Nama Guru Tidak Ditemukan' }}
+        </p>
+        @if (!($guru instanceof \App\Models\Guru) || $guru->id_guru === null)
+            <p class="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-lg">
+                ⚠️ Peringatan: Data guru Anda belum disinkronkan sepenuhnya di database (tabel `guru`).
+            </p>
+        @endif
+    </div>
+
+    {{-- Tabel Jadwal --}}
+    <div class="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
+        <div class="bg-indigo-50 px-6 py-3">
+            <h3 class="text-lg font-semibold text-indigo-700">Alokasi Mata Pelajaran dan Kelas</h3>
+        </div>
+        
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-indigo-50">
+            <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">No.</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">Mata Pelajaran</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">Kelas</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No.</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Pelajaran</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas Diajar</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+                {{-- Looping data jadwal --}}
                 @forelse ($jadwal as $index => $item)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $index + 1 }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $item->mataPelajaran->nama_mapel ?? 'Mapel Tidak Ditemukan' }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $item->kelas->nama_kelas ?? 'Kelas Tidak Ditemukan' }}</td>
-                </tr>
+                    <tr class="hover:bg-indigo-50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ $index + 1 }}</td>
+                        
+                        {{-- Memastikan relasi ada sebelum mengakses properti --}}
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                            {{ $item->mataPelajaran->nama_mapel ?? 'Mapel Tidak Ditemukan' }}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm text-gray-700">
+                            {{ $item->kelas->nama_kelas ?? 'Kelas Tidak Ditemukan' }}
+                        </td>
+                    </tr>
                 @empty
-                <tr>
-                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">Anda belum memiliki alokasi mengajar. Silakan hubungi admin/kepala sekolah.</td>
-                </tr>
+                    <tr>
+                        <td colspan="3" class="px-6 py-8 text-center text-gray-500 bg-gray-50">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1-1.385 15.655a2 2 0 0 0 1.99 2.345h17.15a2 2 0 0 0 1.99-2.345L21 3H3z"></path>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada jadwal</h3>
+                            <p class="mt-1 text-sm text-gray-500">
+                                Anda belum memiliki alokasi pengajaran yang tercatat.
+                            </p>
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>

@@ -6,11 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Absensi;
 use App\Models\Siswa;
 use App\Models\Notifikasi;
+use App\Models\Kelas; // Pastikan model Kelas diimport
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-
-
 use Illuminate\Validation\ValidationException;
 
 class AbsensiController extends Controller
@@ -47,15 +46,25 @@ class AbsensiController extends Controller
     public function store(Request $request)
     {
         $isQr = $request->header('Content-Type') === 'application/json';
+        $nis = '';
+        $tanggal = '';
+        $lokasi = '';
+        $waktu = Carbon::now();
 
         // ===============================
         // 1. VALIDASI INPUT
         // ===============================
         if ($isQr) {
-            $validated = $request->validate([
-                'nis' => 'required|exists:siswa,nis',
-                'lokasi' => 'nullable|string|max:100'
-            ]);
+            try {
+                $validated = $request->validate([
+                    'nis' => 'required|exists:siswa,nis',
+                    'lokasi' => 'nullable|string|max:100'
+                ]);
+            } catch (ValidationException $e) {
+                // Tangani error validasi untuk permintaan QR (JSON)
+                $msg = "❌ NIS tidak valid atau tidak ditemukan.";
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
 
             $nis = $validated['nis'];
             $lokasi = $validated['lokasi'] ?? 'QR Device';
@@ -74,7 +83,18 @@ class AbsensiController extends Controller
             $nis = $validated['nis'];
             $tanggal = $validated['tanggal'];
             $lokasi = $validated['lokasi'];
-            $waktu = Carbon::parse($tanggal . ' ' . ($validated['jam'] ?? '00:00:00'));
+            $waktu = Carbon::parse($tanggal . ' ' . ($validated['jam'] ?? '07:00'));
+        }
+        
+        // ===============================
+        // 1.5. Ambil Siswa dan Kelas (Diperlukan untuk Logika QR)
+        // ===============================
+        $siswa = Siswa::with('kelas')->where('nis', $nis)->first();
+
+        // Cek jika ini adalah absensi QR dan data siswa/kelas tidak ditemukan
+        if ($isQr && (!$siswa || !$siswa->kelas)) {
+             $msg = "❌ Data siswa atau kelas tidak ditemukan. Mohon cek data NIS dan penugasan kelas.";
+             return response()->json(['success' => false, 'message' => $msg], 404);
         }
 
         // ===============================
@@ -97,11 +117,23 @@ class AbsensiController extends Controller
         // 3. TENTUKAN STATUS
         // ===============================
         if ($isQr) {
-            // Jam masuk sekolah
-            $jamMasuk = Carbon::createFromTimeString('23:55:00');
+            // Logika Pembatasan Jam Masuk BERDASARKAN KELAS
+            
+            // Mengambil jam_masuk dari relasi Kelas. Jika tidak ada, default ke '07:30:00'.
+            $jamMasukString = $siswa->kelas->jam_masuk ?? '07:30:00'; 
+            
+            // Konversi jam masuk kelas ke objek Carbon
+            $jamMasuk = Carbon::createFromTimeString($jamMasukString);
+            
+            // Bandingkan waktu scan dengan jam masuk kelas
+            // Jika waktu scan > jam masuk kelas, status = 'terlambat'
             $status = $waktu->greaterThan($jamMasuk) ? 'terlambat' : 'hadir';
             $sumber = 'scan';
+            
+            // Logging untuk debugging
+            Log::info("Absensi QR untuk NIS: {$nis}, Kelas: {$siswa->kelas->nama_kelas}, Jam Masuk Kelas: {$jamMasukString}, Waktu Scan: {$waktu->format('H:i')}, Status: {$status}");
         } else {
+            // Logika untuk input manual (status sudah divalidasi di langkah 1)
             $status = strtolower($validated['status']);
             $sumber = 'manual';
         }
@@ -113,7 +145,7 @@ class AbsensiController extends Controller
             $absensi = Absensi::create([
                 'nis' => $nis,
                 'tanggal' => $tanggal,
-                'jam' => $waktu->format('H:i:s'),
+                'jam' => $waktu->format('H:i'),
                 'status' => $status,
                 'sumber' => $sumber,
                 'lokasi' => $lokasi,
@@ -126,17 +158,22 @@ class AbsensiController extends Controller
 
             // === Respon SCAN QR ===
             if ($isQr) {
+                $statusPesan = ($status == 'terlambat') 
+                    ? "‼️ {$status}! Anda masuk pada {$waktu->format('H:i')} (Batas: {$jamMasukString})." 
+                    : "✅ Absensi {$status} dicatat pada {$waktu->format('H:i')}.";
+
                 return response()->json([
                     'success' => true,
-                    'message' => "✅ Absensi {$status} dicatat",
+                    'message' => $statusPesan,
                     'status' => $status
                 ]);
             }
 
             return redirect()->route('absensi.index')->with('success', 'Absensi berhasil ditambahkan');
         } catch (\Exception $e) {
+            Log::error("Gagal menyimpan absensi: " . $e->getMessage()); // Tambahkan log error
             return $isQr
-                ? response()->json(['success' => false, 'message' => "❌ Error server: " . $e->getMessage()])
+                ? response()->json(['success' => false, 'message' => "❌ Error server: Absensi gagal dicatat."])
                 : back()->with('error', 'Gagal menyimpan absensi.');
         }
     }
@@ -184,14 +221,16 @@ class AbsensiController extends Controller
         $request->validate([
             'status' => 'required|in:hadir,terlambat,izin,sakit,alpa',
             'tanggal' => 'required|date',
-            'jam' => 'nullable|date_format:H:i:s',
+            // Memperluas format jam untuk menerima H:i atau H:i:s, sesuai kebutuhan umum
+            'jam' => ['nullable', 'regex:/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
             'lokasi' => 'nullable|string|max:100',
             'sumber' => 'required|in:scan,manual',
         ]);
 
         $absensi = Absensi::findOrFail($id);
 
-        $jam = $request->jam ? Carbon::parse($request->jam)->format('H:i:s') : $absensi->jam;
+        // Format jam menjadi H:i sebelum update
+        $jam = $request->jam ? Carbon::parse($request->jam)->format('H:i') : $absensi->jam;
 
         $absensi->update([
             'tanggal' => $request->tanggal,

@@ -41,7 +41,7 @@
                 @enderror
             </div>
 
-            {{-- Tingkat --}}
+            <!-- {{-- Tingkat --}}
             <div class="col-span-1">
                 <label for="tingkat" class="block text-sm font-medium text-gray-700 mb-1">Tingkat (Kelas)</label>
                 <select name="tingkat" id="tingkat"
@@ -56,7 +56,7 @@
                 @error('tingkat')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
                 @enderror
-            </div>
+            </div> -->
             
             {{-- Kolom Kosong untuk mengisi grid --}}
             <div class="col-span-1"></div> 
