@@ -71,37 +71,8 @@
                 @enderror
             </div>
 
-             <!-- <label for="id_mapel" class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran (Wajib)</label>
-    <select name="id_mapel" id="id_mapel" required
-        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_mapel') border-red-500 @enderror">
-        <option value="" disabled selected>Pilih Mata Pelajaran</option>
-        @foreach ($mapel as $m)
-            <option value="{{ $m->id_mapel }}" {{ old('id_mapel') == $m->id_mapel ? 'selected' : '' }}>
-                {{ $m->nama_mapel }}
-            </option>
-        @endforeach
-    </select>
-    @error('id_mapel')
-        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-    @enderror
-</div>
-
-<div>
-    <label for="id_kelas_wali" class="block text-sm font-medium text-gray-700 mb-1">Wali Kelas (Opsional)</label>
-    <select name="id_kelas_wali" id="id_kelas_wali"
-        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('id_kelas_wali') border-red-500 @enderror">
-        <option value="" selected>--- Tidak Menjadi Wali Kelas ---</option>
-        @foreach ($kelas as $k)
-            <option value="{{ $k->id_kelas }}" {{ old('id_kelas_wali') == $k->id_kelas ? 'selected' : '' }}>
-                {{ $k->nama_kelas }}
-            </option>
-        @endforeach
-    </select>
-    @error('id_kelas_wali')
-        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-    @enderror
-</div>
-             -->
+         
+            
             <!-- No HP -->
             <div>
                 <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1">Nomor HP</label>

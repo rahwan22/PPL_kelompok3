@@ -18,7 +18,7 @@
                     <p><strong>Mata Pelajaran:</strong> {{ $nilai->mapel->nama_mapel ?? 'N/A' }}</p>
                     <p><strong>Kode Mapel:</strong> {{ $nilai->mapel->kode_mapel ?? 'N/A' }}</p>
                     <p><strong>Semester:</strong> {{ $nilai->semester }}</p>
-                    <p><strong>Nilai Akhir:</strong> <span class="badge bg-success fs-6">{{ number_format($nilai->nilai_akhir, 2) }}</span></p>
+                   
                 </div>
             </div>
             <hr>
@@ -30,7 +30,9 @@
                     <tr><th>Nilai UAS</th><td>{{ $nilai->nilai_uas }}</td></tr>
                 </tbody>
             </table>
-            
+            <p><strong>Hasil Nilai Akhir:</strong> <span class="badge bg-success fs-6">{{ number_format($nilai->nilai_akhir, 2) }}</span></p>
+           
+           
             <h5 class="mt-4">Catatan Guru</h5>
             <p class="alert alert-info">{{ $nilai->catatan ?? 'Tidak ada catatan.' }}</p>
 

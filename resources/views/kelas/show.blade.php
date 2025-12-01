@@ -3,21 +3,49 @@
 @section('content')
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        {{-- Tombol Kembali --}}
-        <a href="{{ route('kelas.index') }}" class="btn btn-secondary rounded-pill shadow-sm">
-            <i class="fas fa-arrow-left me-1"></i> Kembali ke Data Kelas
-        </a>
-        <a href="{{ route('mapel.index') }}" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-50 transition duration-150">
-            Kembali ke Daftar
-        </a>
         
+
+        @auth
+            @if (Auth::user()->role === 'admin' || Auth::user()->role === 'kepala_sekolah')
+                <a href="{{ route('kelas.index') }}" class="btn btn-secondary rounded-pill shadow-sm me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Kembali ke Data Kelas
+                </a>
+            @else
+                {{-- Spacer jika tombol di atas tidak ditampilkan --}}
+                <div></div>
+            @endif
+        @endauth
+
         {{-- Header Detail --}}
         <h2 class="h3 font-weight-bold text-primary text-center m-0">
             <i class="fas fa-chalkboard-teacher me-2"></i> Detail Kelas
         </h2>
+        
+        <div class="d-flex">
+    
+            @auth
+                @if (Auth::user()->role === 'admin')
+                    <a href="{{ route('kelas.mapel.list', $kelas->id_kelas) }}" class="px-4 py-2 text-sm font-semibold rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-50 transition duration-150 me-2" style="text-decoration: none;">
+                        <i class="fas fa-book me-1"></i> Daftar Mata Pelajaran Kelas Ini
+                    </a>
+                @endif
+            @endauth
 
-        {{-- Spacer untuk penyeimbang layout --}}
-        <div></div> 
+            {{-- Tombol Mulai Scan QR (Hanya untuk Guru) --}}
+            @auth
+                @if (Auth::user()->role === 'guru')
+          
+                    <a href="{{ route('jadwal.guru.saya') }}" class="btn btn-primary rounded-pill shadow-sm">
+                        <i class="fas fa-qrcode me-1"></i> Kembali Ke Daftar
+                    </a>
+                @endif
+            @endauth
+        
+            @guest
+                <div></div>
+            @endguest
+        </div>
+
     </div>
 
     {{-- Kartu Detail Kelas --}}
@@ -47,12 +75,12 @@
     </div>
 
     {{-- Daftar Siswa --}}
-    <div class="card shadow-lg border-0 rounded-3">
+    <div class="card shadow-lg border-0 rounded-3 mb-5">
         <div class="card-header bg-secondary text-white py-3 rounded-top-3">
             <h4 class="mb-0">
                 <i class="fas fa-users me-2"></i> Daftar Siswa
             </h4>
-      
+        
         </div>
         <div class="card-body p-0">
             @if ($kelas->siswa->count() > 0)
@@ -86,9 +114,19 @@
                 </div>
             @endif
         </div>
-        
     </div>
     
+    {{-- Tombol "Jadwal Mengajar Saya" dipindahkan ke bawah dan dibuat menonjol --}}
+    @auth
+        @if (Auth::user()->role === 'guru')
+            <div class="d-flex justify-content-center mt-4 pb-5">
+                <a href="{{ route('absensi.scan') }}" class="btn btn-lg btn-success rounded-pill shadow-lg w-75">
+                    <i class="fas fa-calendar-alt me-2"></i> Scan QR Sekarang
+                </a>
+            </div>
+        @endif
+    @endauth
+
 </div>
 
 <style>
@@ -98,8 +136,4 @@
         color: white !important;
     }
 </style>
-
-{{-- Script asumsi $kelas sudah di-load dengan $kelas->with(['waliKelas', 'siswa']) di Controller --}}
-{{-- Anda mungkin perlu memastikan relasi $siswa dan $waliKelas ada di model Kelas --}}
-
 @endsection

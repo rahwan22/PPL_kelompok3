@@ -292,19 +292,15 @@
                         <h2 ca;>DASHBOARD GURU</h2>
                         <li class="nav-item"><a class="nav-link" href="{{ route('dashboard.guru') }}"><i
                                         class="bi bi-speedometer2"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('absensi.scan') }}"><i
-                                        class="bi bi-qr-code-scan"></i> Absensi Siswa (QR)</a></li>
+                        <!--  -->
                         <li class="nav-item"><a class="nav-link" href="{{ route('absensi.index') }}"><i
                                         class="bi bi-card-checklist"></i> LIhat Absensi</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}"><i
-                                        class="bi bi-pencil-square"></i> Input Nilai Lapor</a></li>
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('jadwal.guru.saya') }}"><i
                                         class="bi bi-people"></i> Alokasi Kelas</a></li>
 
-
-                        <li class="nav-item"><a class="nav-link" href="{{ route('lihat.mapel') }}"><i
-                                        class="bi bi-journal-bookmark"></i> Lihat Mapel</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('nilai.index') }}"><i
+                                        class="bi bi-pencil-square"></i> Input Nilai Lapor</a></li>
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('notifikasi.index') }}"><i
                                         class="bi bi-pencil-square"></i> Notifikasi</a></li>

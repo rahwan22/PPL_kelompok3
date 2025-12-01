@@ -30,6 +30,11 @@
                 <i class="fas fa-list-alt mr-1"></i> Lihat Daftar Absensi
             </a>
         </div>
+        <div class="text-center mt-6">
+            <a href="{{ route('jadwal.guru.saya') }}" class="btn btn-primary rounded-pill shadow-sm ">
+                <i class="fas fa-arrow-left me-1"></i> Kembali Ke 
+            </a>
+        </div>
     </div>
 </div>
 

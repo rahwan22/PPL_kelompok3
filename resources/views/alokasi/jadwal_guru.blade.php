@@ -12,7 +12,7 @@
     {{-- Kartu Info Guru --}}
     <div class="bg-white shadow-xl rounded-xl p-6 mb-8 border-t-4 border-indigo-500">
         <h2 class="text-xl font-semibold text-gray-700">
-            Profil Guru
+            Nama Guru
         </h2>
         <p class="text-3xl font-bold text-indigo-600 mt-1">
             {{ $guru->nama ?? 'Nama Guru Tidak Ditemukan' }}
@@ -36,6 +36,8 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No.</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Pelajaran</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas Diajar</th>
+                    {{-- Kolom Aksi yang hilang sudah dikembalikan di sini --}}
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -52,10 +54,21 @@
                         <td class="px-6 py-4 text-sm text-gray-700">
                             {{ $item->kelas->nama_kelas ?? 'Kelas Tidak Ditemukan' }}
                         </td>
+                        
+                        {{-- ** Perubahan Utama di sini: Kolom Aksi ** --}}
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                            {{-- Gunakan $item->id_kelas untuk mendapatkan ID kelas yang sedang diajar --}}
+                            {{-- Asumsi Anda memiliki route bernama 'kelas.show' yang menerima ID kelas --}}
+                            <a href="{{ route('kelas.show', $item->id_kelas) }}" 
+                               class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-semibold rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition ease-in-out duration-150">
+                                Absen Sekarang
+                            </a>
+                        </td>
+                
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="px-6 py-8 text-center text-gray-500 bg-gray-50">
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500 bg-gray-50">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1-1.385 15.655a2 2 0 0 0 1.99 2.345h17.15a2 2 0 0 0 1.99-2.345L21 3H3z"></path>
                             </svg>

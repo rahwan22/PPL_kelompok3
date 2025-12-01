@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -107,5 +108,31 @@ class MataPelajaranController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('mapel.index')->with('error', 'Gagal menghapus Mata Pelajaran. Ada data lain yang terkait.');
         }
+    }
+
+
+    public function indexByKelas($id_kelas)
+    {
+        // 1. Cari data kelas
+        $kelas = Kelas::findOrFail($id_kelas);
+
+        // 2. Ambil ID Mata Pelajaran unik yang diajarkan di kelas ini
+        // Menggunakan tabel pivot guru_mapel_kelas
+        $mapel_ids = \DB::table('guru_mapel_kelas')
+                        ->where('id_kelas', $id_kelas)
+                        ->pluck('id_mapel')
+                        ->unique();
+
+        // 3. Ambil data Mata Pelajaran yang sesuai dengan ID tersebut
+        $mapels = MataPelajaran::whereIn('id_mapel', $mapel_ids)
+                                ->get();
+        
+        // 4. Kirim data ke view (Anda mungkin perlu membuat view baru atau
+        // memodifikasi view 'mapel.index' agar bisa menerima parameter $kelas)
+        return view('mapel.index', [
+            'mapels' => $mapels,
+            'kelas' => $kelas, // Kirim kelas untuk tampilan header
+            'filter_aktif' => true // Memberi tahu view bahwa ini adalah tampilan yang difilter
+        ]);
     }
 }

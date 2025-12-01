@@ -15,14 +15,12 @@
 
     {{-- Filter dan Tombol Tambah --}}
     <div class="d-flex justify-content-between mb-3">
-        {{-- Tombol Tambah Manual kini muncul jika role adalah 'admin' ATAU 'guru' --}}
-        @if (auth()->user()->role == 'admin' || auth()->user()->role == 'guru')
+        {{-- Tombol Tambah Manual kini muncul jika role adala guru' --}}
+        @if( auth()->user()->role == 'guru')
             <a href="{{ route('absensi.create') }}" class="btn btn-success rounded-pill shadow-sm">
                 <i class="fas fa-plus me-1"></i> Tambah Absensi Manual
             </a>
-            <a href="{{ route('absensi.scan') }}" class="btn btn-primary rounded-pill shadow-sm">
-                <i class="fas fa-qrcode me-1"></i> Mulai Scan QR
-            </a>
+            
         @endif
         {{-- Area Filter (Dapat ditambahkan logika filter di sini) --}}
         
@@ -88,10 +86,6 @@
                                         {{ $a->sumber }}
                                     </span>
                                 </td>
-                                <!-- <td>
-                                    {{-- Kolom DIINPUT OLEH baru (Asumsi relasi 'user' ada di model Absensi) --}}
-                                    <small>{{ $a->user->name ?? ' ' }}</small> -->
-                                <!-- </td> -->
                                 @if (auth()->user()->role == 'admin' || auth()->user()->role == 'guru')
                                     <td class="text-center">
                                         {{-- Tombol Edit (Menggunakan $a->id_absensi) --}}

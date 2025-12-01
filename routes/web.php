@@ -44,6 +44,7 @@ Route::resource('kelas', KelasController::class);
 Route::resource('siswa', SiswaController::class);
 Route::resource('guru', GuruController::class);
 Route::get('admin/siswa/{nis}/nilai', [NilaiController::class, 'nilaiSiswaByAdmin'])->name('admin.nilai.show_by_siswa');
+Route::get('/kelas/{id_kelas}/mapel', [MataPelajaranController::class, 'indexByKelas'])->name('kelas.mapel.list');
 
 // Route::get('/alokasi/available-kelas', [AlokasiMengajarController::class, 'getAvailableKelas']);
 // Route::prefix('alokasi')->group(function () {
@@ -70,6 +71,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         // 'absensi' => AbsensiController::class,
         
     ]);
+    
+
+
+
     // 🆕 RUTE BARU: PENGELOLAAN ALOKASI MENGAJAR (CRUD)
     Route::get('/alokasi/available-kelas', [AlokasiMengajarController::class, 'getAvailableKelas']);
     Route::prefix('alokasi')->group(function () {
