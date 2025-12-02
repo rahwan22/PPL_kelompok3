@@ -11,12 +11,45 @@ use App\Models\Kelas;
 class NilaiController extends Controller
 {
     // ✅ Tampilkan semua data nilai
-    public function index()
+    // public function index()
+    // {
+    //     // Eager load relasi 'kelas' agar nama kelas bisa ditampilkan
+    //     $nilai = Nilai::with(['siswa', 'mapel', 'kelas'])->get();
+    //     return view('nilai.index', compact('nilai'));
+    // }
+
+    public function index(Request $request) 
     {
-        // Eager load relasi 'kelas' agar nama kelas bisa ditampilkan
-        $nilai = Nilai::with(['siswa', 'mapel', 'kelas'])->get();
-        return view('nilai.index', compact('nilai'));
+        // 1. Ambil data Kelas dan Mapel untuk Filter Dropdown
+        $semuaKelas = Kelas::all();
+        $semuaMapel = MataPelajaran::all();
+
+        // 2. Inisialisasi Query Nilai
+        $query = Nilai::with(['siswa', 'mapel', 'kelas']);
+        
+        // 3. Terapkan Filter
+
+        // Filter berdasarkan Kelas
+        if ($request->filled('kelas')) {
+            $query->where('id_kelas', $request->kelas);
+        }
+
+        // Filter berdasarkan Mata Pelajaran
+        if ($request->filled('mapel')) {
+            $query->where('id_mapel', $request->mapel);
+        }
+
+        // 4. Eksekusi Query
+        // Urutkan nilai berdasarkan tanggal input atau kriteria lain
+        $nilai = $query->orderBy('created_at', 'desc')->get(); 
+        
+        // 5. Kirim semua data ke View
+        return view('nilai.index', compact('nilai', 'semuaKelas', 'semuaMapel'));
     }
+
+
+
+
     public function nilaiSiswaByAdmin($nis)
     {
         // 1. Ambil data Siswa untuk memastikan siswa ada dan menampilkan nama
@@ -139,4 +172,6 @@ class NilaiController extends Controller
         // Kirim data ke view 'nilai.show'
         return view('nilai.show', compact('nilai'));
     }
+
+    
 }

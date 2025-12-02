@@ -61,7 +61,7 @@
                             {{-- Asumsi Anda memiliki route bernama 'kelas.show' yang menerima ID kelas --}}
                             <a href="{{ route('kelas.show', $item->id_kelas) }}" 
                                class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-semibold rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition ease-in-out duration-150">
-                                Absen Sekarang
+                                Mulai Kelas
                             </a>
                         </td>
                 

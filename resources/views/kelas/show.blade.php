@@ -89,6 +89,7 @@
                         <div style="width: 50%;">Nama Siswa</div>
                         <div style="width: 25%;" class="text-center">NISN</div>
                         <div style="width: 25%;" class="text-center">Jenis Kelamin</div>
+                        <!-- <div style="width: 25%;" class="text-center">Aksi</div> -->
                     </li>
                     @foreach ($kelas->siswa->sortBy('nama') as $siswa)
                         <li class="list-group-item d-flex justify-content-between align-items-center py-3">
@@ -106,6 +107,7 @@
                             </div>
                         </li>
                     @endforeach
+                    
                 </ul>
                 
             @else

@@ -46,15 +46,6 @@ Route::resource('guru', GuruController::class);
 Route::get('admin/siswa/{nis}/nilai', [NilaiController::class, 'nilaiSiswaByAdmin'])->name('admin.nilai.show_by_siswa');
 Route::get('/kelas/{id_kelas}/mapel', [MataPelajaranController::class, 'indexByKelas'])->name('kelas.mapel.list');
 
-// Route::get('/alokasi/available-kelas', [AlokasiMengajarController::class, 'getAvailableKelas']);
-// Route::prefix('alokasi')->group(function () {
-//         Route::get('/', [AlokasiMengajarController::class, 'index'])->name('alokasi.index');
-//         Route::get('/create', [AlokasiMengajarController::class, 'create'])->name('alokasi.create');
-//         Route::post('/', [AlokasiMengajarController::class, 'store'])->name('alokasi.store');
-//         // Asumsi hanya perlu delete untuk tabel pivot
-//         Route::delete('/{alokasi}', [AlokasiMengajarController::class, 'destroy'])->name('alokasi.destroy');
-//     });
-//end
 
 // ===================== 3. ADMIN ACCESS (ROLE: ADMIN) =====================
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -126,7 +117,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     // --- Rute Nilai --
     Route::resource('nilai', NilaiController::class);
+    
+    
     Route::resource('notifikasi', NotifikasiController::class);
+ 
 
     
 });

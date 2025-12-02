@@ -22,7 +22,7 @@
                     <th>Orang Tua</th>
                     <th>Pesan</th>
                     <th>Status Kirim</th> <!-- Menggantikan 'Status' lama -->
-                    <th>Aksi</th>
+                    <!-- <th>Aksi</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -50,8 +50,7 @@
                                 {{ ucfirst($statusKirim) }}
                             </span>
                         </td>
-                        
-                        <!-- Kolom Aksi (Tombol) -->
+                     
                         
                     </tr>
                 @endforeach

@@ -3,10 +3,14 @@
 @section('content')
 <div class="max-w-7xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
     <div class="flex justify-between items-center mb-6 border-b pb-4">
+        @if (auth()->user()->role !== 'kepala_sekolah')
         <h1 class="text-3xl font-extrabold text-gray-800">Daftar Mata Pelajaran</h1>
         <a href="{{ route('mapel.create') }}" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition duration-150">
             + Tambah Mapel
         </a>
+        @else
+                <div></div> {{-- Spacer for alignment --}}
+            @endif
     </div>
 
     @if (session('success'))
@@ -28,7 +32,9 @@
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Kode</th>
                     <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Mata Pelajaran</th>
                     <!-- <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Tingkat</th> -->
+                     @if (auth()->user()->role !== 'kepala_sekolah')
                     <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -40,6 +46,7 @@
                         <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $mapel->tingkat ?? '-' }}</td> -->
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex justify-center space-x-2">
+                                @if (auth()->user()->role !== 'kepala_sekolah')
                                 <a href="{{ route('mapel.show', $mapel->id_mapel) }}" class="text-blue-600 hover:text-blue-900 transition duration-150 p-2 rounded-lg bg-blue-50">
                                     Lihat
                                 </a>
@@ -53,6 +60,7 @@
                                         Hapus
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

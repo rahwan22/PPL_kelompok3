@@ -38,9 +38,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- PENTING: Pastikan variabel yang di-loop adalah $kelas --}}
                         @forelse ($kelas as $k) 
-                            {{-- Baris Utama Kelas --}}
                             <tr style="cursor: pointer;" 
                                 data-bs-toggle="collapse" 
                                 data-bs-target="#siswa-{{ $k->id_kelas }}" 
@@ -55,14 +53,12 @@
                                 <td>{{ $k->tahun_ajaran }}</td>
                                 <td>
                                     <span class="badge bg-secondary">
-                                        {{-- AKSES RELASI YANG SUDAH DI-EAGER LOAD --}}
                                         {{ $k->waliKelas->nama ?? 'Belum Ditentukan' }} 
                                     </span>
                                 </td>
                                 {{-- Kolom Jumlah Siswa --}}
                                 <td class="text-center">
                                     <span class="badge bg-primary rounded-pill">
-                                        {{-- AKSES RELASI SISWA YANG SUDAH DI-EAGER LOAD --}}
                                         {{ $k->siswa->count() }} 
                                     </span>
                                 </td>
