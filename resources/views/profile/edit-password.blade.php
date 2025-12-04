@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+
+<link rel="stylesheet" href="{{ asset('assets/css/profil.css') }}">
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-xl-6">
@@ -100,30 +103,6 @@
     </div>
 </div>
 
-{{-- Styling Tambahan (Style tidak diubah karena tujuannya hanya memperkecil ukuran) --}}
-<style>
-    /* Gradient Primary yang Lebih Halus */
-    .bg-gradient-primary {
-        background: linear-gradient(90deg, #4361ee, #7209b7) !important;
-        color: white;
-    }
 
-    /* Style Tombol Submit Modern */
-    .btn-modern-submit {
-        transition: transform 0.2s, box-shadow 0.2s;
-        background: linear-gradient(90deg, #4361ee, #7209b7);
-        border: none;
-    }
 
-    .btn-modern-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(114, 9, 183, 0.4); /* Shadow ungu */
-        background: linear-gradient(90deg, #4cc9f0, #7209b7);
-    }
-
-    /* Shadow yang lebih kuat untuk card */
-    .shadow-xl {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-</style>
 @endsection

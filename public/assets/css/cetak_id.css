@@ -1,0 +1,62 @@
+
+        /* Gaya untuk tampilan Kartu ID */
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .card-container {
+            /* Dimensi Kartu ID standar (CR80) sekitar 3.375" x 2.125" */
+            width: 320px; /* Lebar Kartu */
+            height: 200px; /* Tinggi Kartu */
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid #4f46e5; /* Aksen Indigo */
+            position: relative;
+            display: flex;
+            padding: 0;
+        }
+        .header-strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background-color: #4f46e5;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 20px;
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); /* Bentuk strip melengkung sedikit */
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body { 
+                margin: 0; 
+                padding: 0;
+                background-color: white !important;
+                display: block; /* Matikan flex untuk cetak */
+            }
+            .no-print {
+                display: none !important;
+            }
+            .card-container {
+                /* Atur ulang margin dan shadow untuk hasil cetak yang bersih */
+                margin: 10mm; /* Jarak dari tepi kertas */
+                box-shadow: none; 
+                border: 1px solid #ccc; /* Border tipis untuk menunjukkan batas kartu */
+                /* Pastikan ukuran tetap sama untuk konsistensi */
+                width: 320px; 
+                height: 200px;
+                page-break-after: always; /* Cetak kartu per halaman (jika ada loop) */
+            }
+        }
+    

@@ -77,6 +77,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     });
 
     Route::get('/siswa/{siswa}/cetak-id', [SiswaController::class, 'cetakId'])->name('siswa.cetak.id');
+    Route::get('/siswa/idcard/massal', [SiswaController::class, 'downloadIdCardMassal'])->name('admin.siswa.downloadIdCardMassal');
     
     // Rute khusus QR untuk Admin (mencetak QR Siswa)
     Route::get('/admin/siswa/{nis}/generate-qr', [SiswaController::class, 'generateQR'])->name('admin.siswa.generateQR');
@@ -120,7 +121,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     
     
     Route::resource('notifikasi', NotifikasiController::class);
- 
+
 
     
 });

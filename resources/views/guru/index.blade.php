@@ -20,10 +20,6 @@
                 <th>No</th>
                 <th>Nama</th>
                 <th>NIP</th>
-                
-                
-                
-       
                 <th><center>Aksi</center></th>
                  
             </tr>

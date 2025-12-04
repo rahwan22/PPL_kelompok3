@@ -1,0 +1,180 @@
+
+        /* ====== RESET & UMUM ====== */
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e9f0ff, #ffffff);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* ====== NAVBAR ====== */
+        .navbar {
+            background: linear-gradient(90deg, #3a0ca3, #4361ee);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            position: sticky;
+            top: 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: #fff !important;
+        }
+
+        .navbar .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .navbar .nav-link:hover {
+            color: #ffd60a !important;
+        }
+
+        /* ====== SIDEBAR ====== */
+        .sidebar {
+            background: linear-gradient(180deg, #3a0ca3, #5f0f40);
+            min-height: 100vh;
+            padding: 25px 15px;
+            color: #fff;
+        }
+
+        .sidebar .nav-link {
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .sidebar h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* ====== CONTENT ====== */
+        .content {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.4s ease-in-out;
+            min-height: calc(100vh - 80px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 992px) {
+            .sidebar {
+                min-height: auto;
+                text-align: center;
+                padding: 15px 10px;
+            }
+
+            .sidebar .nav-link {
+                justify-content: center;
+                font-size: 0.9rem;
+            }
+
+            .sidebar .nav-link i {
+                margin: 0 0 5px 0;
+                display: block;
+            }
+
+            .content {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                min-height: auto;
+            }
+
+            .content {
+                width: 100%;
+                margin: 0;
+            }
+        }
+
+        /* ====== TABLE STYLE ====== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #3a0ca3;
+            color: #fff;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tbody tr:hover {
+            background-color: #edf2fb;
+        }
+
+        /* ====== BUTTON ====== */
+        .btn-custom {
+            background: linear-gradient(90deg, #4361ee, #7209b7);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(90deg, #4cc9f0, #7209b7);
+            transform: translateY(-2px);
+        }

@@ -1,0 +1,40 @@
+.alokasi-detail {
+    max-height: 0;
+}
+.alokasi-detail.active {
+  
+    max-height: 1000px; 
+}
+.alokasi-icon.rotate {
+    transform: rotate(-180deg);
+}
+
+.alokasi-detail td {
+    white-space: normal !important;
+}
+
+
+@media (max-width: 640px) {
+    .alokasi-detail table {
+        display: block;
+        width: 100%;
+    }
+    .alokasi-detail thead, .alokasi-detail tbody, .alokasi-detail tr, .alokasi-detail th, .alokasi-detail td {
+        display: block;
+    }
+    .alokasi-detail tr {
+        margin-bottom: 0.5rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    .alokasi-detail th {
+        text-align: left;
+    }
+    .alokasi-detail td {
+        text-align: left;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    .alokasi-detail td:last-child {
+        text-align: left;
+    }
+}

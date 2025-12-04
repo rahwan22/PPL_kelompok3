@@ -67,9 +67,6 @@
                 </div>
                 @endif
 
-                
-                
-               
                 <!-- No HP -->
                 <div class="flex items-center">
                     <span class="font-medium w-36">No. HP</span>

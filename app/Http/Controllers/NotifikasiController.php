@@ -63,16 +63,13 @@ class NotifikasiController extends Controller
         ]);
 
         $notifikasi = Notifikasi::findOrFail($id);
-        $notifikasi->update([
-            'pesan' => $request->pesan,
-            'status' => $request->status,
-        ]);
+        
 
         return redirect()->route('notifikasi.index')->with('success', 'Notifikasi berhasil diperbarui!');
     }
 
     // ❌ Hapus notifikasi
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $notifikasi = Notifikasi::findOrFail($id);
         $notifikasi->delete();

@@ -3,6 +3,7 @@
 @section('title', 'Alokasi Pengajaran Guru')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('assets/css/alokasi.css') }}">
 <div class="container mx-auto p-4">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">Daftar Alokasi Pengajaran</h1>
 
@@ -74,75 +75,6 @@
     </div>
 </div>
 
-<style>
-/* CSS Tambahan untuk transisi height */
-/* Karena Tailwind tidak memiliki kelas 'max-height' yang dinamis */
-.alokasi-detail {
-    max-height: 0;
-}
-.alokasi-detail.active {
-    /* Set max-height yang cukup besar agar transisi terlihat. */
-    /* Nilai ini harus lebih besar dari konten terpanjang. */
-    max-height: 1000px; 
-}
-.alokasi-icon.rotate {
-    transform: rotate(-180deg);
-}
-/* Menghilangkan whitespace-nowrap pada detail cell untuk responsifitas */
-.alokasi-detail td {
-    white-space: normal !important;
-}
 
-/* Pastikan kolom aksi tetap di kanan pada layar kecil */
-@media (max-width: 640px) {
-    .alokasi-detail table {
-        display: block;
-        width: 100%;
-    }
-    .alokasi-detail thead, .alokasi-detail tbody, .alokasi-detail tr, .alokasi-detail th, .alokasi-detail td {
-        display: block;
-    }
-    .alokasi-detail tr {
-        margin-bottom: 0.5rem;
-        border-top: 1px solid #e5e7eb;
-    }
-    .alokasi-detail th {
-        text-align: left;
-    }
-    .alokasi-detail td {
-        text-align: left;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    .alokasi-detail td:last-child {
-        text-align: left; /* Aksi diletakkan di kiri */
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const headers = document.querySelectorAll('.alokasi-header');
-
-    headers.forEach(header => {
-        header.addEventListener('click', function () {
-            // Dapatkan ID elemen detail yang ditargetkan dari data-target
-            const targetId = this.getAttribute('data-target');
-            const detail = document.getElementById(targetId);
-            const icon = this.querySelector('.alokasi-icon');
-
-            // Toggle kelas 'hidden' untuk visibility dan 'active' untuk transisi
-            detail.classList.toggle('hidden');
-            
-            // Menggunakan setTimeout agar transisi max-height berfungsi setelah 'hidden' dihapus
-            setTimeout(() => {
-                detail.classList.toggle('active');
-            }, 10); 
-            
-            // Toggle rotasi ikon
-            icon.classList.toggle('rotate');
-        });
-    });
-});
-</script>
+<script src="{{ asset('assets/js/alokasi.js') }}" defer></script>
 @endsection

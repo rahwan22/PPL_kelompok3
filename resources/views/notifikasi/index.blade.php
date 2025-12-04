@@ -21,8 +21,6 @@
                     <th>Siswa (NIS)</th>
                     <th>Orang Tua</th>
                     <th>Pesan</th>
-                    <th>Status Kirim</th> <!-- Menggantikan 'Status' lama -->
-                    <!-- <th>Aksi</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -36,20 +34,7 @@
                             {{ Str::limit($n->pesan, 80) }}
                         </td>
                         
-                        <!-- Kolom Status Kirim (Menggunakan status_kirim dari Controller) -->
-                        <td>
-                            @php
-                                $statusKirim = strtolower($n->status_kirim ?? 'pending');
-                                $badgeClass = match ($statusKirim) {
-                                    'terkirim' => 'bg-success',
-                                    'gagal' => 'bg-danger',
-                                    default => 'bg-warning', // pending atau status lain
-                                };
-                            @endphp
-                            <span class="badge {{ $badgeClass }}">
-                                {{ ucfirst($statusKirim) }}
-                            </span>
-                        </td>
+                      
                      
                         
                     </tr>

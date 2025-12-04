@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use PDF;
 use App\Models\Siswa;
 use App\Models\Kelas;
 use App\Models\Orangtua;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 // Tambahan yang diperlukan untuk logika foto/transaksi:
@@ -344,4 +346,40 @@ public function cetakId(Siswa $siswa)
     return $pdf->download('kartu-siswa-' . $siswa->nis . '.pdf');
     
 }
+public function downloadIdCardMassal(Request $request)
+    {
+        // 1. Validasi input NIS
+        $nisList = $request->input('nis_list');
+
+        if (empty($nisList)) {
+            return redirect()->back()->with('error', 'Tidak ada siswa yang dipilih untuk unduh ID Card massal.');
+        }
+
+        // 2. Ambil data siswa yang dipilih
+        // Pastikan Anda mengambil relasi QR code jika QR code disimpan sebagai relasi/file
+        $siswas = Siswa::whereIn('nis', $nisList)
+                       ->whereNotNull('qr_code') // Hanya yang sudah punya QR Code
+                       ->get();
+
+        if ($siswas->isEmpty()) {
+            return redirect()->back()->with('error', 'Tidak ada siswa yang valid (dengan QR Code) ditemukan.');
+        }
+
+        // 3. Render ke view cetak (Contoh menggunakan Dompdf)
+        
+        // Buat ID Card menjadi kelompok 6 per halaman
+        $chunks = $siswas->chunk(6); 
+        
+        // Buat view khusus untuk cetak ID Card
+        $pdf = PDF::loadView('siswa.id_card_massal_cetak', [
+            'chunks' => $chunks, 
+            'siswas' => $siswas
+        ]);
+
+        // Atur ukuran dan orientasi kertas jika diperlukan (misal A4 Landscape)
+        // $pdf->setPaper('a4', 'landscape');
+        
+        // 4. Download file PDF
+        return $pdf->download('id_card_massal_' . now()->format('Ymd_His') . '.pdf');
+    }
 }
