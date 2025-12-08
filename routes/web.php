@@ -77,7 +77,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     });
 
     Route::get('/siswa/{siswa}/cetak-id', [SiswaController::class, 'cetakId'])->name('siswa.cetak.id');
-    Route::get('/siswa/idcard/massal', [SiswaController::class, 'downloadIdCardMassal'])->name('admin.siswa.downloadIdCardMassal');
+    Route::get('/download-idcard-massal', [SiswaController::class, 'downloadIdCardMassal'])->name('admin.downloadIdCardMassal');
     
     // Rute khusus QR untuk Admin (mencetak QR Siswa)
     Route::get('/admin/siswa/{nis}/generate-qr', [SiswaController::class, 'generateQR'])->name('admin.siswa.generateQR');
@@ -111,6 +111,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     // Route untuk menampilkan jadwal mengajar khusus guru
     Route::get('/jadwal-mengajar-saya', [AlokasiMengajarController::class, 'jadwalGuru'])->name('jadwal.guru.saya');
+   
     Route::get('/scan', [AbsensiController::class, 'scanForm'])->name('absensi.scan');
     
     // Route::get('semua/kelas', [KelasController::class, 'index'])->name('lihat.kelas');
@@ -127,3 +128,4 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 });
 
 
+Route::get('/absensi/get-siswa/{id_kelas}', [AbsensiController::class, 'getSiswaByKelas'])->name('absensi.getSiswa');

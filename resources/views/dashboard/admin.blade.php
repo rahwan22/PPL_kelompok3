@@ -63,7 +63,7 @@
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.7)', // Warna untuk tahun 2022
                         'rgba(153, 102, 255, 0.7)', // Warna untuk tahun 2023
-                        'rgba(255, 159, 64, 0.7)' // Warna untuk tahun 2024
+                        // 'rgba(255, 159, 64, 0.7)' // Warna untuk tahun 2024
                     ],
                     borderColor: [
                         'rgba(75, 192, 192, 1)',

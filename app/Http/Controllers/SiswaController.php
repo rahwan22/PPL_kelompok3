@@ -346,40 +346,40 @@ public function cetakId(Siswa $siswa)
     return $pdf->download('kartu-siswa-' . $siswa->nis . '.pdf');
     
 }
+// ... (lanjutan dari atas)
+
 public function downloadIdCardMassal(Request $request)
     {
-        // 1. Validasi input NIS
+        // 1. Ambil daftar NIS dari URL Query
         $nisList = $request->input('nis_list');
 
         if (empty($nisList)) {
-            return redirect()->back()->with('error', 'Tidak ada siswa yang dipilih untuk unduh ID Card massal.');
+            return redirect()->back()->with('error', 'Silakan pilih minimal satu siswa untuk diunduh ID Card.');
         }
 
-        // 2. Ambil data siswa yang dipilih
-        // Pastikan Anda mengambil relasi QR code jika QR code disimpan sebagai relasi/file
-        $siswas = Siswa::whereIn('nis', $nisList)
-                       ->whereNotNull('qr_code') // Hanya yang sudah punya QR Code
+        // 2. Ambil data siswa dari database (termasuk relasi kelas)
+        // Penting: Pastikan relasi 'kelas' sudah didefinisikan di Model Siswa
+        $siswas = Siswa::with('kelas')
+                       ->whereIn('nis', $nisList)
+                       ->orderBy('id_kelas') // Opsional: urutkan berdasarkan kelas
                        ->get();
 
         if ($siswas->isEmpty()) {
-            return redirect()->back()->with('error', 'Tidak ada siswa yang valid (dengan QR Code) ditemukan.');
+            return redirect()->back()->with('error', 'Data siswa yang dipilih tidak ditemukan.');
         }
 
-        // 3. Render ke view cetak (Contoh menggunakan Dompdf)
-        
-        // Buat ID Card menjadi kelompok 6 per halaman
-        $chunks = $siswas->chunk(6); 
-        
-        // Buat view khusus untuk cetak ID Card
-        $pdf = PDF::loadView('siswa.id_card_massal_cetak', [
-            'chunks' => $chunks, 
-            'siswas' => $siswas
-        ]);
+        // 3. Lakukan CHUNKING (Pembagian) Data
+        // Bagi koleksi siswa menjadi potongan (chunks), misal 6 siswa per halaman.
+        // Variabel inilah ($chunks) yang diminta oleh view Blade Anda.
+        $chunks = $siswas->chunk(6);
 
-        // Atur ukuran dan orientasi kertas jika diperlukan (misal A4 Landscape)
-        // $pdf->setPaper('a4', 'landscape');
-        
-        // 4. Download file PDF
-        return $pdf->download('id_card_massal_' . now()->format('Ymd_His') . '.pdf');
+        // 4. Generate PDF massal
+        // Teruskan variabel $chunks ke view.
+        $pdf = PDF::loadView('siswa.id_card_massal_cetak', compact('chunks'));
+
+        // Opsional: Atur ukuran dan orientasi kertas jika diperlukan
+        $pdf->setPaper('A4', 'portrait'); 
+
+        return $pdf->download('id_card_siswa_massal_' . now()->format('Ymd') . '.pdf');
     }
 }

@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card Siswa Massal</title>
-    
-    <style>
+
         /* --- Umum & Halaman --- */
         @page { 
             size: A4; 
@@ -153,63 +146,4 @@
             line-height: 1;
             margin: 0;
         }
-    </style>
-</head>
-<body>
     
-    @foreach ($chunks as $siswasOnPage)
-        {{-- Setiap perulangan $chunks menjadi halaman baru (page-break) --}}
-        <div class="page-break">
-            @foreach ($siswasOnPage as $siswa)
-                {{-- Setiap $siswa menjadi satu kartu --}}
-                <div class="card-container-wrapper">
-                    <div class="card-container">
-                        <div class="header-strip">KARTU PELAJAR</div>
-                        
-                        {{-- KOLOM KIRI (DETAIL UTAMA) --}}
-                        <div class="column-left-detail">
-                            <div class="text-detail">
-                                <p>Nama Siswa</p>
-                                <h2>{{ $siswa->nama }}</h2>
-                            </div>
-                            
-                            <div class="text-nis">
-                                <p>NIS: <span style="font-weight: 600;">{{ $siswa->nis }}</span></p>
-                            </div>
-
-                            {{-- KELAS Diletakkan secara ABSOLUTE di bagian bawah kolom kiri --}}
-                            <div class="kelas-container">
-                                <p class="label">KELAS:</p>
-                                <p class="nama">{{ $siswa->kelas->nama_kelas ?? 'N/A' }}</p>
-                            </div>
-                        </div>
-
-                        {{-- KOLOM KANAN (FOTO & QR) --}}
-                        <div class="column-right-photo">
-                            
-                            {{-- Foto --}}
-                            <div class="foto-box">
-                                @if ($siswa->foto)
-                                    {{-- Menggunakan public_path untuk dompdf --}}
-                                    <img src="{{ public_path('storage/' . $siswa->foto) }}" alt="Foto Siswa" style="width: 100%; height: 100%; object-fit: cover;">
-                                @else
-                                    <div style="width: 100%; height: 100%; background-color: #d1d5db; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #4b5563; font-weight: bold;">FOTO</div>
-                                @endif
-                            </div>
-                            
-                            {{-- QR Code --}}
-                            @if ($siswa->qr_code)
-                                {{-- Menggunakan public_path untuk dompdf --}}
-                                <img src="{{ public_path('storage/qr/' . $siswa->qr_code) }}" alt="QR Code" class="qr-code-img">
-                            @else
-                                <p style="font-size: 6px; color: #dc2626;">QR Code Belum Tersedia</p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    @endforeach
-    
-</body>
-</html>

@@ -22,7 +22,7 @@
                 {{-- Tombol BARU: Unduh Massal ID Card --}}
                 @if (auth()->user()->role === 'admin' && count($kelas) > 0)
                     <button id="downloadMassalBtn" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-green-700 bg-green-100 hover:bg-green-200 transition duration-150">
-                        <i class="fas fa-id-card mr-2"></i> Unduh Massal ID Card
+                        <i class="fas fa-id-card mr-2"></i> Unduh Semua ID Card
                     </button>
                 @endif
                 
@@ -155,6 +155,10 @@
 
     </div>
 </div>
+<script>
+    // Definisikan rute yang dibutuhkan oleh JavaScript
+    const DOWNLOAD_MASSAL_URL = "{{ route('admin.downloadIdCardMassal') }}";
+</script>
 
 <script src="{{ asset('assets/js/siswa.js') }}" defer></script>
 <script>

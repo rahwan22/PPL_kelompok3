@@ -86,13 +86,13 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('dashboard.kepsek') }}"><i
                                         class="bi bi-speedometer2"></i> Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.guru') }}"><i
-                                        class="bi bi-person-badge"></i> Laporan Guru</a></li>
+                                        class="bi bi-person-badge"></i> Semua Guru</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.siswa') }}"><i
-                                        class="bi bi-people"></i> Laporan Siswa</a></li>
+                                        class="bi bi-people"></i> Semua Siswa</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.mapel') }}"><i
                                         class="bi bi-journal-bookmark"></i> Semua Mapel</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.absensi') }}"><i
-                                        class="bi bi-card-checklist"></i> Laporan Absensi</a></li>
+                                        class="bi bi-card-checklist"></i> Semua Absensi</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('laporan.kelas') }}"><i
                                         class="bi bi-people"></i> Lihat Kelas</a></li>
 

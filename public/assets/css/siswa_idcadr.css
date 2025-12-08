@@ -50,3 +50,49 @@
             height: 40px; 
             margin-top: 5px;
         }
+        
+
+        /* CSS yang wajib ada untuk cetak massal */
+        .page-break {
+            page-break-after: always;
+            /* Layout ID Card yang akan diulang (misal 2 kolom x 3 baris = 6 kartu per halaman) */
+            display: flex;
+            flex-wrap: wrap;
+            height: 200mm; /* Tinggi kertas A4 */
+            width: 200mm;  /* Lebar kertas A4 */
+            margin: 0 auto;
+        }
+
+        .card-container-wrapper {
+            /* Sesuaikan ukuran ini agar 6 kartu muat di A4 */
+            width: 50%; /* 2 kartu per baris */
+            height: calc(100% / 3); /* 3 kartu per kolom */
+            padding: 5px; /* Margin antar kartu */
+            box-sizing: border-box;
+        }
+
+        /* Styling dasar dari desain Tailwind Anda (Pastikan ini ada di siswa_idcadr.css atau style di bawah) */
+        .card-container {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            height: 100%;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .header-strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            font-size: 8px;
+            text-align: center;
+            padding: 2px 0;
+        }
+        /* Tambahkan semua class Tailwind yang digunakan (w-2/5, pt-8, p-3, dll.)
+           sebagai CSS biasa di sini atau di siswa_idcadr.css */
+    

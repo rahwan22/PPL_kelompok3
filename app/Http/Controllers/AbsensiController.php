@@ -26,10 +26,18 @@ class AbsensiController extends Controller
     /**
      * Form tambah absensi manual
      */
+    // public function create()
+    // {
+    //     $siswa = Siswa::where('aktif', true)->get();
+    //     return view('absensi.create', compact('siswa'));
+    // }
     public function create()
     {
-        $siswa = Siswa::where('aktif', true)->get();
-        return view('absensi.create', compact('siswa'));
+        $siswa = Siswa::where('aktif', true)->get(); // Ini tetap dipertahankan untuk referensi, meskipun nanti akan diganti AJAX
+        $kelas = Kelas::all(); // Ambil semua data kelas
+        
+        // return view('absensi.create', compact('siswa')); // BARIS LAMA
+        return view('absensi.create', compact('siswa', 'kelas')); // BARIS BARU
     }
 
     /**
@@ -116,16 +124,56 @@ class AbsensiController extends Controller
         // ===============================
         // 3. TENTUKAN STATUS
         // ===============================
+        // if ($isQr) {
+        //     // Logika Pembatasan Jam Masuk BERDASARKAN KELAS
+            
+        //     // Mengambil jam_masuk dari relasi Kelas. Jika tidak ada, default ke '07:30:00'.
+        //     $jamMasukString = $siswa->kelas->jam_masuk ?? '07:45:00'; 
+            
+        //     // Konversi jam masuk kelas ke objek Carbon
+        //     $jamMasuk = Carbon::createFromTimeString($jamMasukString);
+            
+        //     // Bandingkan waktu scan dengan jam masuk kelas
+        //     // Jika waktu scan > jam masuk kelas, status = 'terlambat'
+        //     $status = $waktu->greaterThan($jamMasuk) ? 'terlambat' : 'hadir';
+        //     $sumber = 'scan';
+            
+        //     // Logging untuk debugging
+        //     Log::info("Absensi QR untuk NIS: {$nis}, Kelas: {$siswa->kelas->nama_kelas}, Jam Masuk Kelas: {$jamMasukString}, Waktu Scan: {$waktu->format('H:i')}, Status: {$status}");
+        // } else {
+        //     // Logika untuk input manual (status sudah divalidasi di langkah 1)
+        //     $status = strtolower($validated['status']);
+        //     $sumber = 'manual';
+        // }
+
+
+
         if ($isQr) {
             // Logika Pembatasan Jam Masuk BERDASARKAN KELAS
             
-            // Mengambil jam_masuk dari relasi Kelas. Jika tidak ada, default ke '07:30:00'.
-            $jamMasukString = $siswa->kelas->jam_masuk ?? '07:30:00'; 
+            // Mengambil jam_masuk dari relasi Kelas. Jika tidak ada, default diatur ke 13:00:00 WITA.
+            $jamMasukString = $siswa->kelas->jam_masuk ?? '15:00:00'; 
             
-            // Konversi jam masuk kelas ke objek Carbon
+            // Konversi jam masuk kelas ke objek Carbon pada tanggal hari ini
+            // Pastikan Anda telah mengatur 'timezone' di config/app.php ke 'Asia/Makassar' (WITA)
             $jamMasuk = Carbon::createFromTimeString($jamMasukString);
             
-            // Bandingkan waktu scan dengan jam masuk kelas
+            // --- LOGIKA BARU: TOLERANSI SCAN TERLALU CEPAT (5 MENIT SETELAH JAM MASUK) ---
+            $jamMulaiScan = $jamMasuk->copy()->addMinutes(5); // Scan baru bisa dilakukan 5 menit SETELAH jam masuk.
+            $batasAkhirScan = Carbon::createFromTimeString('18:00:00'); // Batas Akhir Absen (Pukul 18:00 sore)
+            
+            // Cek jika scan dilakukan di luar rentang waktu (sebelum jam mulai scan atau setelah batas akhir)
+            if ($waktu->lessThan($jamMulaiScan)) {
+                 $msg = "❌ Absensi terlalu cepat. Scan baru dapat dilakukan pada {$jamMulaiScan->format('H:i')}.";
+                 return response()->json(['success' => false, 'message' => $msg]);
+            }
+
+            if ($waktu->greaterThan($batasAkhirScan)) {
+                 $msg = "❌ Absensi ditolak. Waktu scan sudah melewati batas akhir ({$batasAkhirScan->format('H:i')}).";
+                 return response()->json(['success' => false, 'message' => $msg]);
+            }
+
+            // Bandingkan waktu scan dengan batas jam masuk (13:00:00)
             // Jika waktu scan > jam masuk kelas, status = 'terlambat'
             $status = $waktu->greaterThan($jamMasuk) ? 'terlambat' : 'hadir';
             $sumber = 'scan';
@@ -248,4 +296,26 @@ class AbsensiController extends Controller
         Absensi::findOrFail($id)->delete();
         return redirect()->route('absensi.index')->with('success', 'Berhasil dihapus.');
     }
+
+    /**
+     * Mengambil data siswa berdasarkan ID Kelas untuk AJAX
+     */
+    public function getSiswaByKelas($id_kelas)
+    {
+        // Pastikan Anda memiliki kolom 'id_kelas' pada model Siswa
+        try {
+            $siswa = \App\Models\Siswa::where('id_kelas', $id_kelas)
+                                    ->where('aktif', true)
+                                    ->orderBy('nama')
+                                    ->get(['nis', 'nama']); // Hanya ambil NIS dan Nama
+
+            // Tambahkan Log untuk Debugging
+            \Illuminate\Support\Facades\Log::info("Siswa ditemukan untuk Kelas {$id_kelas}: " . $siswa->count());
+
+            return response()->json($siswa);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Gagal mengambil siswa: " . $e->getMessage());
+            return response()->json([], 500);
+    }
+}
 }
